@@ -2,25 +2,69 @@ from __future__ import annotations
 
 """Custom quality metrics calculations."""
 
-import statistics
 from typing import Any
 
 import numpy as np
 
 
+# Experiment-specific scoring profiles
+SCORING_PROFILES = {
+    "wgs": {  # Whole Genome Sequencing
+        "base_quality": 0.35,
+        "sequence_quality": 0.20,
+        "length_distribution": 0.10,
+        "gc_content": 0.15,
+        "adapter_content": 0.15,
+        "duplication": 0.05,  # Lower weight - some duplication OK
+    },
+    "rna_seq": {  # RNA Sequencing
+        "base_quality": 0.30,
+        "sequence_quality": 0.25,
+        "length_distribution": 0.15,
+        "gc_content": 0.25,
+        "adapter_content": 0.05,
+        "duplication": 0.00,  # Ignore - high duplication is normal
+    },
+    "amplicon": {  # Amplicon/Targeted Sequencing
+        "base_quality": 0.40,
+        "sequence_quality": 0.30,
+        "length_distribution": 0.20,
+        "gc_content": 0.10,
+        "adapter_content": 0.00,
+        "duplication": 0.00,  # Ignore - very high duplication expected
+    },
+    "chip_seq": {  # ChIP Sequencing
+        "base_quality": 0.30,
+        "sequence_quality": 0.20,
+        "length_distribution": 0.10,
+        "gc_content": 0.20,
+        "adapter_content": 0.15,
+        "duplication": 0.05,  # Some duplication expected at peaks
+    },
+}
+
+
 class QualityMetrics:
     """Calculate custom quality metrics for sequencing data."""
 
-    def __init__(self) -> None:
-        """Initialize quality metrics calculator."""
-        self.weights = {
-            "base_quality": 0.3,
-            "sequence_quality": 0.2,
-            "length_distribution": 0.15,
-            "gc_content": 0.15,
-            "adapter_content": 0.1,
-            "duplication": 0.1,
-        }
+    def __init__(self, experiment_type: str = "wgs") -> None:
+        """
+        Initialize quality metrics calculator.
+
+        Args:
+            experiment_type: Type of sequencing experiment
+                ('wgs', 'rna_seq', 'amplicon', 'chip_seq')
+
+        Raises:
+            ValueError: If experiment_type is not recognized
+        """
+        if experiment_type not in SCORING_PROFILES:
+            raise ValueError(
+                f"Unknown experiment type: {experiment_type}. "
+                f"Must be one of: {list(SCORING_PROFILES.keys())}"
+            )
+        self.experiment_type = experiment_type
+        self.weights = SCORING_PROFILES[experiment_type]
 
     def calculate_composite_score(
         self, fastqc_data: dict[str, Any], trimming_stats: dict[str, Any] | None = None
@@ -156,6 +200,9 @@ class QualityMetrics:
         """
         Score sequence duplication levels.
 
+        BIOLOGICAL FIX: Context-aware scoring based on experiment type.
+        High duplication is expected/normal for RNA-seq, amplicon, and ChIP-seq.
+
         Args:
             fastqc_data: FastQC data dictionary
 
@@ -165,8 +212,17 @@ class QualityMetrics:
         summary = fastqc_data.get("summary", {})
         module_status = summary.get("Sequence Duplication Levels", "FAIL")
 
-        # High duplication can be normal for RNA-seq or amplicon sequencing
-        status_scores = {"PASS": 100, "WARN": 80, "FAIL": 50}
+        # Experiment-specific scoring
+        if self.experiment_type in ["rna_seq", "amplicon"]:
+            # Don't penalize expected high duplication
+            return 100
+        elif self.experiment_type == "chip_seq":
+            # Moderate duplication acceptable (enriched regions)
+            status_scores = {"PASS": 100, "WARN": 90, "FAIL": 70}
+        else:  # wgs
+            # Standard WGS - duplication is bad
+            status_scores = {"PASS": 100, "WARN": 70, "FAIL": 30}
+
         return status_scores.get(module_status, 60)
 
     def calculate_quality_distribution(
@@ -200,6 +256,9 @@ class QualityMetrics:
         """
         Calculate GC content percentage.
 
+        CRITICAL FIX: Excludes N bases from calculation to avoid
+        dilution of true GC content in low-quality regions.
+
         Args:
             sequence: DNA sequence string
 
@@ -208,12 +267,14 @@ class QualityMetrics:
         """
         sequence = sequence.upper()
         gc_count = sequence.count("G") + sequence.count("C")
-        total = len(sequence)
 
-        if total == 0:
+        # Count only valid bases (exclude N and other ambiguity codes)
+        valid_bases = sum(sequence.count(base) for base in "ACGT")
+
+        if valid_bases == 0:
             return 0.0
 
-        return (gc_count / total) * 100
+        return (gc_count / valid_bases) * 100
 
     def calculate_n_content(self, sequence: str) -> float:
         """

@@ -100,20 +100,21 @@ class QualityFilter(PreprocessingModule):
             nonlocal total_reads, passed_reads, failed_quality, failed_length, failed_n_content
             total_reads += 1
 
-            # Check length
-            if record.length < min_length:
-                failed_length += 1
-                return False
-
-            # Check mean quality
+            # OPTIMIZATION: Check in order of computational cost and rejection rate
+            # 1. Mean quality (O(n) but fast, high rejection rate)
             if record.mean_quality() < min_quality:
                 failed_quality += 1
                 return False
 
-            # Check N content
-            n_content = (record.sequence.count("N") / record.length) * 100
+            # 2. N content (O(n) string count, medium rejection rate)
+            n_content = (record.sequence.count("N") / record.length * 100) if record.length > 0 else 0
             if n_content > max_n_content:
                 failed_n_content += 1
+                return False
+
+            # 3. Length (O(1), but less discriminatory)
+            if record.length < min_length:
+                failed_length += 1
                 return False
 
             passed_reads += 1

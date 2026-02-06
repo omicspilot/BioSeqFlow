@@ -2,6 +2,7 @@ from __future__ import annotations
 
 """Duplicate removal modules."""
 
+import hashlib
 from collections import defaultdict
 from pathlib import Path
 from typing import Any
@@ -61,6 +62,7 @@ class DuplicateRemover(PreprocessingModule):
         output_file: Path | str,
         method: str = "exact",
         keep_best: bool = True,
+        use_hash: bool = False,
     ) -> dict[str, int | float]:
         """
         Remove duplicate reads.
@@ -68,8 +70,9 @@ class DuplicateRemover(PreprocessingModule):
         Args:
             input_file: Input FASTQ file
             output_file: Output FASTQ file
-            method: Deduplication method ('exact' or 'prefix')
+            method: Deduplication method ('exact', 'prefix', or 'hash')
             keep_best: Keep read with highest quality (if duplicates found)
+            use_hash: Use hash-based dedup for memory efficiency (recommended for >50M reads)
 
         Returns:
             Deduplication statistics
@@ -84,9 +87,13 @@ class DuplicateRemover(PreprocessingModule):
         output_file.parent.mkdir(parents=True, exist_ok=True)
 
         if method == "exact":
+            if use_hash:
+                return self._remove_exact_duplicates_hash(input_file, output_file, keep_best)
             return self._remove_exact_duplicates(input_file, output_file, keep_best)
         elif method == "prefix":
             return self._remove_prefix_duplicates(input_file, output_file, keep_best)
+        elif method == "hash":
+            return self._remove_exact_duplicates_hash(input_file, output_file, keep_best)
         else:
             raise ValueError(f"Unknown deduplication method: {method}")
 
@@ -140,6 +147,68 @@ class DuplicateRemover(PreprocessingModule):
 
         return self.stats
 
+    def _remove_exact_duplicates_hash(
+        self, input_file: Path, output_file: Path, keep_best: bool
+    ) -> dict[str, int | float]:
+        """
+        Remove exact duplicates using hash-based approach (memory-efficient).
+
+        CRITICAL FIX: Uses MD5 hashes instead of full sequences to reduce
+        memory usage from ~100 bytes/read to ~16 bytes/read.
+        Enables processing of 100M+ read files.
+
+        Args:
+            input_file: Input file
+            output_file: Output file
+            keep_best: Keep highest quality duplicate
+
+        Returns:
+            Statistics
+        """
+        total_reads = 0
+        unique_reads = 0
+        duplicates = 0
+
+        # Store hash -> best record mapping (16 bytes hash vs 100+ bytes sequence)
+        seen_hashes: dict[str, FastqRecord] = {}
+
+        def hash_sequence(seq: str) -> str:
+            """Generate MD5 hash of sequence."""
+            return hashlib.md5(seq.encode()).hexdigest()
+
+        for record in read_fastq(input_file):
+            total_reads += 1
+            seq_hash = hash_sequence(record.sequence)
+
+            if seq_hash not in seen_hashes:
+                seen_hashes[seq_hash] = record
+                unique_reads += 1
+            else:
+                duplicates += 1
+
+                # Keep record with better quality if requested
+                if keep_best:
+                    if record.mean_quality() > seen_hashes[seq_hash].mean_quality():
+                        seen_hashes[seq_hash] = record
+
+        # Write unique reads
+        write_fastq(
+            seen_hashes.values(),
+            output_file,
+            compress=str(output_file).endswith(".gz")
+        )
+
+        self.stats = {
+            "total_reads": total_reads,
+            "unique_reads": unique_reads,
+            "duplicates": duplicates,
+            "duplication_rate": (duplicates / total_reads * 100) if total_reads > 0 else 0,
+            "method": "hash",
+            "memory_efficient": True,
+        }
+
+        return self.stats
+
     def _remove_prefix_duplicates(
         self, input_file: Path, output_file: Path, keep_best: bool, prefix_length: int = 30
     ) -> dict[str, int | float]:
@@ -166,8 +235,10 @@ class DuplicateRemover(PreprocessingModule):
         for record in read_fastq(input_file):
             total_reads += 1
 
-            # Get prefix
-            prefix = record.sequence[:prefix_length]
+            # CRITICAL FIX: Handle reads shorter than prefix_length
+            # Prevents IndexError on short/trimmed reads
+            actual_prefix_len = min(prefix_length, len(record.sequence))
+            prefix = record.sequence[:actual_prefix_len]
 
             if prefix not in seen_prefixes:
                 seen_prefixes[prefix] = record

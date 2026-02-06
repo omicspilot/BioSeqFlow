@@ -93,20 +93,39 @@ def read_fastq(file_path: Path | str) -> Generator[FastqRecord, None, None]:
         ValueError: If FASTQ format is invalid
     """
     with open_file(file_path, "r") as f:
+        line_num = 0
         while True:
             header = f.readline()
+            line_num += 1
             if not header:
                 break
 
             sequence = f.readline()
+            line_num += 1
             plus = f.readline()
+            line_num += 1
             quality = f.readline()
+            line_num += 1
 
             if not (header and sequence and plus and quality):
-                raise ValueError("Incomplete FASTQ record")
+                raise ValueError(
+                    f"Incomplete FASTQ record at line {line_num - 3}"
+                )
 
             if not header.startswith("@"):
-                raise ValueError(f"Invalid FASTQ header: {header}")
+                raise ValueError(
+                    f"Invalid FASTQ header at line {line_num - 3}: {header.strip()}"
+                )
+
+            # CRITICAL FIX: Validate sequence and quality lengths match
+            seq_len = len(sequence.strip())
+            qual_len = len(quality.strip())
+            if seq_len != qual_len:
+                raise ValueError(
+                    f"Sequence/quality length mismatch at line {line_num - 3} "
+                    f"(header: {header.strip()}): "
+                    f"sequence={seq_len}bp, quality={qual_len}bp"
+                )
 
             yield FastqRecord(header, sequence, plus, quality)
 

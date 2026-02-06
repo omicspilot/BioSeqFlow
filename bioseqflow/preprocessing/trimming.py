@@ -312,7 +312,7 @@ class QualityTrimmer(PreprocessingModule):
         trimmed_reads = 0
         total_bp_removed = 0
 
-        def trim_record(record: FastqRecord) -> FastqRecord:
+        def trim_record(record: FastqRecord) -> FastqRecord | None:
             nonlocal total_reads, trimmed_reads, total_bp_removed
             total_reads += 1
 
@@ -326,6 +326,9 @@ class QualityTrimmer(PreprocessingModule):
                     if ord(q) - 33 >= min_quality:
                         start = i
                         break
+                else:
+                    # No base met quality threshold from 5' end
+                    start = original_length
 
             # Trim from 3' end
             if trim_3prime:
@@ -333,6 +336,16 @@ class QualityTrimmer(PreprocessingModule):
                     if ord(record.quality[i]) - 33 >= min_quality:
                         end = i + 1
                         break
+                else:
+                    # No base met quality threshold from 3' end
+                    end = 0
+
+            # CRITICAL FIX: Check if read is entirely low quality
+            if start >= end:
+                # Entire read is low quality - filter it out
+                trimmed_reads += 1
+                total_bp_removed += original_length
+                return None
 
             # Check if trimming occurred
             if start > 0 or end < original_length:
@@ -346,13 +359,20 @@ class QualityTrimmer(PreprocessingModule):
                 record.quality[start:end],
             )
 
-        # Process records
-        trimmed_records = (trim_record(record) for record in read_fastq(input_file))
-        write_fastq(trimmed_records, output_file, compress=str(output_file).endswith(".gz"))
+        # Process records and filter out None (all-low-quality reads)
+        trimmed_records = (
+            trimmed for record in read_fastq(input_file)
+            if (trimmed := trim_record(record)) is not None
+        )
+        written = write_fastq(
+            trimmed_records, output_file, compress=str(output_file).endswith(".gz")
+        )
 
         self.stats = {
             "total_reads": total_reads,
             "trimmed_reads": trimmed_reads,
+            "reads_written": written,
+            "reads_discarded": total_reads - written,
             "percent_trimmed": (trimmed_reads / total_reads * 100) if total_reads > 0 else 0,
             "total_bp_removed": total_bp_removed,
         }

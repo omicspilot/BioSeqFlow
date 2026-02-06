@@ -9,6 +9,24 @@ import yaml
 from pydantic import BaseModel, Field, field_validator
 
 
+# Organism-specific GC content profiles
+GC_PROFILES = {
+    "human": (0.35, 0.55),         # Homo sapiens: ~40-45% GC
+    "mouse": (0.35, 0.50),         # Mus musculus: ~42% GC
+    "bacteria": (0.25, 0.75),      # Broad range for bacteria
+    "ecoli": (0.45, 0.55),         # E. coli: ~50% GC
+    "yeast": (0.35, 0.45),         # S. cerevisiae: ~38% GC
+    "arabidopsis": (0.32, 0.42),   # A. thaliana: ~36% GC
+    "drosophila": (0.38, 0.48),    # D. melanogaster: ~42% GC
+    "celegans": (0.32, 0.42),      # C. elegans: ~36% GC
+    "malaria": (0.15, 0.25),       # P. falciparum: 19-20% GC (AT-rich)
+    "tb": (0.60, 0.70),            # M. tuberculosis: 65% GC
+    "streptomyces": (0.65, 0.75),  # Streptomyces: ~70% GC
+    "fungi": (0.35, 0.60),         # Broad range for fungi
+    "generic": (0.15, 0.90),       # Very permissive for unknown organisms
+}
+
+
 class Config(BaseModel):
     """Main configuration class for BioSeqFlow."""
 
@@ -38,9 +56,17 @@ class Config(BaseModel):
 
     # QC thresholds
     min_base_quality: int = Field(default=20, ge=0, le=93)
-    gc_content_min: float = Field(default=0.2, ge=0.0, le=1.0)
-    gc_content_max: float = Field(default=0.8, ge=0.0, le=1.0)
+    gc_content_min: float = Field(
+        default=0.15, ge=0.0, le=1.0, description="Minimum GC content (fraction)"
+    )
+    gc_content_max: float = Field(
+        default=0.90, ge=0.0, le=1.0, description="Maximum GC content (fraction)"
+    )
     duplication_threshold: float = Field(default=0.7, ge=0.0, le=1.0)
+    organism: str | None = Field(
+        default=None,
+        description="Organism profile for GC thresholds (overrides gc_content_min/max)"
+    )
 
     class Config:
         """Pydantic configuration."""
@@ -54,6 +80,22 @@ class Config(BaseModel):
         if isinstance(v, str):
             v = Path(v)
         return v
+
+    def __init__(self, **data: Any) -> None:
+        """Initialize config and apply organism-specific settings."""
+        super().__init__(**data)
+
+        # Apply organism-specific GC thresholds if organism is specified
+        if self.organism:
+            if self.organism in GC_PROFILES:
+                gc_min, gc_max = GC_PROFILES[self.organism]
+                self.gc_content_min = gc_min
+                self.gc_content_max = gc_max
+            else:
+                raise ValueError(
+                    f"Unknown organism: {self.organism}. "
+                    f"Available profiles: {list(GC_PROFILES.keys())}"
+                )
 
     @classmethod
     def from_yaml(cls, yaml_path: Path | str) -> "Config":
