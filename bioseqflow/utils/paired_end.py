@@ -2,8 +2,9 @@ from __future__ import annotations
 
 """Utilities for paired-end sequencing data validation and processing."""
 
+from collections.abc import Generator
 from pathlib import Path
-from typing import Generator, NamedTuple
+from typing import NamedTuple
 
 from bioseqflow.utils.io import FastqRecord, read_fastq
 

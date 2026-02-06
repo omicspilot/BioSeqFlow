@@ -53,7 +53,7 @@ class QCModule(BaseModule):
         super().__init__(config)
         self.results: dict[str, Any] = {}
 
-    def run(self, *args: Any, **kwargs: Any) -> dict[str, Any]:
+    def run(self, *_args: Any, **_kwargs: Any) -> dict[str, Any]:
         """
         Execute the module's main functionality.
 

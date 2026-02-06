@@ -66,7 +66,7 @@ class QualityMetrics:
         self.weights = SCORING_PROFILES[experiment_type]
 
     def calculate_composite_score(
-        self, fastqc_data: dict[str, Any], trimming_stats: dict[str, Any] | None = None
+        self, fastqc_data: dict[str, Any], _trimming_stats: dict[str, Any] | None = None
     ) -> float:
         """
         Calculate composite quality score.
@@ -79,15 +79,12 @@ class QualityMetrics:
 
         Args:
             fastqc_data: Parsed FastQC data
-            trimming_stats: Optional trimming statistics
+            _trimming_stats: Optional trimming statistics (unused currently)
 
         Returns:
             Composite quality score (0-100)
         """
         scores = {}
-
-        # Extract basic statistics
-        basic_stats = fastqc_data.get("modules", {}).get("Basic Statistics", {})
 
         # Base quality score (from per base sequence quality)
         scores["base_quality"] = self._score_base_quality(fastqc_data)

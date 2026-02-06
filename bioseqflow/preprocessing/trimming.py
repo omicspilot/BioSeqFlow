@@ -31,14 +31,14 @@ class AdapterTrimmer(PreprocessingModule):
         self.error_rate = 0.1
 
     def validate_inputs(
-        self, input_file: Path | str, output_file: Path | str, adapter: str
+        self, input_file: Path | str, _output_file: Path | str, adapter: str
     ) -> None:
         """
         Validate inputs for trimming.
 
         Args:
             input_file: Input FASTQ file
-            output_file: Output FASTQ file
+            _output_file: Output FASTQ file (unused in base validation)
             adapter: Adapter sequence
 
         Raises:
@@ -280,14 +280,14 @@ class QualityTrimmer(PreprocessingModule):
         super().__init__(config)
 
     def validate_inputs(
-        self, input_file: Path | str, output_file: Path | str, min_quality: int
+        self, input_file: Path | str, _output_file: Path | str, min_quality: int
     ) -> None:
         """
         Validate inputs.
 
         Args:
             input_file: Input file
-            output_file: Output file
+            _output_file: Output file (unused in base validation)
             min_quality: Minimum quality threshold
 
         Raises:

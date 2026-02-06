@@ -116,14 +116,14 @@ class DuplicateRemover(PreprocessingModule):
         super().__init__(config)
 
     def validate_inputs(
-        self, input_file: Path | str, output_file: Path | str
+        self, input_file: Path | str, _output_file: Path | str
     ) -> None:
         """
         Validate inputs.
 
         Args:
             input_file: Input file
-            output_file: Output file
+            _output_file: Output file (unused in base validation)
 
         Raises:
             ValueError: If inputs are invalid
@@ -370,14 +370,14 @@ class UMIDeduplicator(PreprocessingModule):
         super().__init__(config)
 
     def validate_inputs(
-        self, input_file: Path | str, output_file: Path | str
+        self, input_file: Path | str, _output_file: Path | str
     ) -> None:
         """
         Validate inputs.
 
         Args:
             input_file: Input file
-            output_file: Output file
+            _output_file: Output file (unused in base validation)
 
         Raises:
             ValueError: If inputs are invalid

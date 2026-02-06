@@ -1,6 +1,5 @@
 """Tests for core modules."""
 
-import tempfile
 from pathlib import Path
 
 import pytest

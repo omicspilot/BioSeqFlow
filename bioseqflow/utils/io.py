@@ -5,7 +5,7 @@ from __future__ import annotations
 import gzip
 from collections.abc import Generator
 from pathlib import Path
-from typing import IO, Any
+from typing import IO
 
 import pandas as pd
 

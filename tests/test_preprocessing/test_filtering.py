@@ -5,7 +5,6 @@ from pathlib import Path
 import pytest
 
 from bioseqflow.preprocessing.filtering import LengthFilter, QualityFilter
-from bioseqflow.utils.io import count_reads, read_fastq
 
 
 class TestQualityFilter:

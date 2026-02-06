@@ -85,7 +85,7 @@ class TestFileIO:
     def test_open_file_not_found(self, temp_dir: Path) -> None:
         """Test opening non-existent file."""
         with pytest.raises(FileNotFoundError):
-            with open_file(temp_dir / "nonexistent.txt", "r") as f:
+            with open_file(temp_dir / "nonexistent.txt", "r") as _f:
                 pass
 
     def test_read_fastq(self, sample_fastq_file: Path) -> None:

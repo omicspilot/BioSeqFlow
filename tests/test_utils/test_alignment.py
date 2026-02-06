@@ -2,7 +2,6 @@ from __future__ import annotations
 
 """Tests for sequence alignment utilities."""
 
-import pytest
 
 from bioseqflow.utils.alignment import (
     calculate_match_score,
@@ -131,8 +130,7 @@ class TestFindAdapterFuzzy:
         result = find_adapter_fuzzy(sequence, adapter, max_error_rate=0.1)
 
         # Should not match with low error tolerance
-        # (may be None or have very low score)
-        # This is a boundary case
+        assert result is None
 
     def test_adapter_at_start(self):
         """Test finding adapter at start of sequence."""
