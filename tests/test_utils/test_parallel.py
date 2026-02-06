@@ -4,8 +4,6 @@ from __future__ import annotations
 
 import multiprocessing as mp
 
-import pytest
-
 from bioseqflow.utils.parallel import (
     get_optimal_workers,
     parallel_map,

@@ -84,9 +84,8 @@ class TestFileIO:
 
     def test_open_file_not_found(self, temp_dir: Path) -> None:
         """Test opening non-existent file."""
-        with pytest.raises(FileNotFoundError):
-            with open_file(temp_dir / "nonexistent.txt", "r") as _f:
-                pass
+        with pytest.raises(FileNotFoundError), open_file(temp_dir / "nonexistent.txt", "r") as _f:
+            pass
 
     def test_read_fastq(self, sample_fastq_file: Path) -> None:
         """Test reading FASTQ file."""
@@ -137,7 +136,7 @@ class TestFileIO:
 
         assert isinstance(dist, dict)
         assert len(dist) > 0
-        assert all(isinstance(k, int) for k in dist.keys())
+        assert all(isinstance(k, int) for k in dist)
         assert all(isinstance(v, int) for v in dist.values())
 
 

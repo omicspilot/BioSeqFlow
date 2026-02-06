@@ -2,11 +2,13 @@ from __future__ import annotations
 
 """Utilities for paired-end sequencing data validation and processing."""
 
-from collections.abc import Generator
 from pathlib import Path
-from typing import NamedTuple
+from typing import TYPE_CHECKING, NamedTuple
 
 from bioseqflow.utils.io import FastqRecord, read_fastq
+
+if TYPE_CHECKING:
+    from collections.abc import Generator
 
 
 class PairedRecord(NamedTuple):
@@ -213,7 +215,7 @@ def read_paired_fastq(
             except StopIteration:
                 raise ValueError(
                     f"R2 file ended early at pair {pair_num}, but R1 continues"
-                )
+                ) from None
 
             # Validate read IDs match
             if validate:

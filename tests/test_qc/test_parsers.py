@@ -2,11 +2,15 @@ from __future__ import annotations
 
 """Tests for QC parsers."""
 
-from pathlib import Path
+
+from typing import TYPE_CHECKING
 
 import pytest
 
 from bioseqflow.qc.parsers import FastQCParser, MultiQCParser
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 class TestFastQCParser:

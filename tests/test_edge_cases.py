@@ -2,9 +2,11 @@ from __future__ import annotations
 
 """Comprehensive edge case tests for BioSeqFlow."""
 
-from pathlib import Path
+
+from typing import TYPE_CHECKING
 
 import pytest
+from pydantic import ValidationError
 
 from bioseqflow.core.config import Config
 from bioseqflow.preprocessing.deduplication import DuplicateRemover, UMIDeduplicator
@@ -12,6 +14,9 @@ from bioseqflow.preprocessing.filtering import LengthFilter, QualityFilter
 from bioseqflow.preprocessing.trimming import AdapterTrimmer, QualityTrimmer
 from bioseqflow.utils.alignment import find_adapter_fuzzy, smith_waterman
 from bioseqflow.utils.io import FastqRecord, read_fastq, write_fastq
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 class TestFastqEdgeCases:
@@ -400,10 +405,10 @@ class TestConfigEdgeCases:
         assert config.min_quality == 93
 
         # Invalid boundaries should raise validation error
-        with pytest.raises(Exception):
+        with pytest.raises(ValidationError):
             Config(min_quality=-1)
 
-        with pytest.raises(Exception):
+        with pytest.raises(ValidationError):
             Config(min_quality=94)
 
     def test_gc_content_boundaries(self):
@@ -413,10 +418,10 @@ class TestConfigEdgeCases:
         assert config.gc_content_max == 1.0
 
         # Invalid ranges
-        with pytest.raises(Exception):
+        with pytest.raises(ValidationError):
             Config(gc_content_min=-0.1)
 
-        with pytest.raises(Exception):
+        with pytest.raises(ValidationError):
             Config(gc_content_max=1.1)
 
     def test_organism_overrides_gc(self):

@@ -2,7 +2,8 @@ from __future__ import annotations
 
 """Tests for paired-end sequencing utilities."""
 
-from pathlib import Path
+
+from typing import TYPE_CHECKING
 
 import pytest
 
@@ -14,6 +15,9 @@ from bioseqflow.utils.paired_end import (
     read_paired_fastq,
     validate_paired_files,
 )
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 class TestExtractReadID:

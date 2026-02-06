@@ -70,7 +70,7 @@ def cluster_umis_directional(
     sorted_umis = sorted(umi_counts.keys(), key=lambda x: (-umi_counts[x], x))
 
     # Initialize mapping: each UMI maps to itself
-    umi_mapping: dict[str, str] = {umi: umi for umi in umi_counts.keys()}
+    umi_mapping: dict[str, str] = {umi: umi for umi in umi_counts}
 
     # Directional clustering
     for i, umi1 in enumerate(sorted_umis):
@@ -218,9 +218,8 @@ class DuplicateRemover(PreprocessingModule):
                 duplicates += 1
 
                 # Keep record with better quality if requested
-                if keep_best:
-                    if record.mean_quality() > seen_sequences[record.sequence].mean_quality():
-                        seen_sequences[record.sequence] = record
+                if keep_best and record.mean_quality() > seen_sequences[record.sequence].mean_quality():
+                    seen_sequences[record.sequence] = record
 
         # Write unique reads
         write_fastq(
@@ -278,9 +277,8 @@ class DuplicateRemover(PreprocessingModule):
                 duplicates += 1
 
                 # Keep record with better quality if requested
-                if keep_best:
-                    if record.mean_quality() > seen_hashes[seq_hash].mean_quality():
-                        seen_hashes[seq_hash] = record
+                if keep_best and record.mean_quality() > seen_hashes[seq_hash].mean_quality():
+                    seen_hashes[seq_hash] = record
 
         # Write unique reads
         write_fastq(
@@ -336,9 +334,8 @@ class DuplicateRemover(PreprocessingModule):
                 duplicates += 1
 
                 # Keep record with better quality if requested
-                if keep_best:
-                    if record.mean_quality() > seen_prefixes[prefix].mean_quality():
-                        seen_prefixes[prefix] = record
+                if keep_best and record.mean_quality() > seen_prefixes[prefix].mean_quality():
+                    seen_prefixes[prefix] = record
 
         # Write unique reads
         write_fastq(
@@ -487,7 +484,7 @@ class UMIDeduplicator(PreprocessingModule):
 
         # Keep best quality read from each UMI group
         unique_records = []
-        for umi, records in umi_groups.items():
+        for _umi, records in umi_groups.items():
             unique_umis += 1
             duplicates += len(records) - 1
 

@@ -3,11 +3,13 @@ from __future__ import annotations
 """Parallel processing utilities for efficient batch operations."""
 
 import multiprocessing as mp
-from collections.abc import Iterable
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, as_completed
-from typing import Any, Callable
+from typing import TYPE_CHECKING, Any, Callable
 
 from tqdm import tqdm
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
 
 def get_optimal_workers(requested: int | None = None) -> int:

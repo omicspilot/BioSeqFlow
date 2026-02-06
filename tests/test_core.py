@@ -4,6 +4,7 @@ from pathlib import Path
 
 import pytest
 import yaml
+from pydantic import ValidationError
 
 from bioseqflow.core.base import PreprocessingModule, QCModule
 from bioseqflow.core.config import Config
@@ -38,11 +39,11 @@ class TestConfig:
     def test_config_validation(self) -> None:
         """Test configuration validation."""
         # Quality score out of range
-        with pytest.raises(Exception):
+        with pytest.raises(ValidationError):
             Config(min_quality=100)
 
         # Invalid min_length
-        with pytest.raises(Exception):
+        with pytest.raises(ValidationError):
             Config(min_length=0)
 
     def test_config_to_dict(self) -> None:

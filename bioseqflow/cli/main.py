@@ -3,7 +3,6 @@ from __future__ import annotations
 """Command-line interface for BioSeqFlow."""
 
 from pathlib import Path
-from typing import Optional
 
 import click
 
@@ -16,12 +15,12 @@ from bioseqflow.qc.fastqc import FastQCRunner
 from bioseqflow.qc.metrics import QualityMetrics
 from bioseqflow.qc.parsers import FastQCParser, MultiQCParser
 from bioseqflow.utils.io import parse_sample_sheet
-from bioseqflow.utils.parallel import process_samples_parallel
 from bioseqflow.utils.paired_end import (
     calculate_insert_size_distribution,
     check_read_orientation,
     validate_paired_files,
 )
+from bioseqflow.utils.parallel import process_samples_parallel
 
 
 def echo_header(text: str) -> None:
@@ -116,7 +115,7 @@ def qc(input_file: str, output_dir: str, threads: int, quiet: bool) -> None:
         metrics = QualityMetrics()
         score = metrics.calculate_composite_score(results)
         click.echo()
-        click.echo(f"Composite Quality Score: " + click.style(f"{score:.1f}/100", fg="yellow", bold=True))
+        click.echo("Composite Quality Score: " + click.style(f"{score:.1f}/100", fg="yellow", bold=True))
 
         if score >= 90:
             echo_success("Quality: Excellent")
@@ -203,7 +202,7 @@ def trim(
         click.echo(f"  Total reads: {stats.get('total_reads', 0):,}")
         click.echo(f"  Trimmed reads: {stats.get('trimmed_reads', 0):,}")
         click.echo(
-            f"  Trim rate: "
+            "  Trim rate: "
             + click.style(f"{stats.get('percent_trimmed', 0):.1f}%", fg="yellow", bold=True)
         )
         click.echo(f"  Bases removed: {stats.get('total_bp_removed', 0):,} bp")
@@ -328,7 +327,7 @@ def deduplicate(input_file: str, output_file: str, method: str, quiet: bool) -> 
 def pipeline(
     input_file: str,
     output_dir: str,
-    adapter: Optional[str],
+    adapter: str | None,
     min_quality: int,
     min_length: int,
     threads: int,
@@ -509,7 +508,7 @@ def batch(sample_sheet: str, output_dir: str, threads: int, quiet: bool) -> None
 def validate_pairs(
     r1: str,
     r2: str,
-    max_pairs: Optional[int],
+    max_pairs: int | None,
     no_order_check: bool,
     quiet: bool,
 ) -> None:
@@ -582,7 +581,7 @@ def insert_size(r1: str, r2: str, max_reads: int) -> None:
     click.echo(click.style("Insert Size Statistics:", fg="cyan", bold=True))
     click.echo(f"  Pairs analyzed: {stats['pairs_analyzed']:,}")
     click.echo(
-        f"  Mean: "
+        "  Mean: "
         + click.style(f"{stats['mean_insert_size']:.1f} bp", fg="yellow", bold=True)
     )
     click.echo(f"  Median: {stats['median_insert_size']:.1f} bp")
@@ -645,7 +644,7 @@ def check_orientation_cmd(r1: str, r2: str, max_reads: int) -> None:
     type=click.Path(exists=True),
     help="MultiQC data directory",
 )
-def parse_qc(fastqc: Optional[str], multiqc: Optional[str]) -> None:
+def parse_qc(fastqc: str | None, multiqc: str | None) -> None:
     """
     Parse and display QC results from FastQC or MultiQC.
 

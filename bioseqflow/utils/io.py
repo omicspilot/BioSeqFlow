@@ -3,11 +3,13 @@ from __future__ import annotations
 """I/O utilities for reading and writing sequence files."""
 
 import gzip
-from collections.abc import Generator
 from pathlib import Path
-from typing import IO
+from typing import IO, TYPE_CHECKING
 
 import pandas as pd
+
+if TYPE_CHECKING:
+    from collections.abc import Generator
 
 
 class FastqRecord:
@@ -230,12 +232,10 @@ def get_read_length_distribution(
         Dictionary mapping length to count
     """
     length_dist: dict[int, int] = {}
-    count = 0
 
-    for record in read_fastq(file_path):
+    for count, record in enumerate(read_fastq(file_path), 1):
         length = record.length
         length_dist[length] = length_dist.get(length, 0) + 1
-        count += 1
 
         if sample_size and count >= sample_size:
             break
