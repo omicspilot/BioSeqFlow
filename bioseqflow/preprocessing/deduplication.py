@@ -3,13 +3,104 @@ from __future__ import annotations
 """Duplicate removal modules."""
 
 import hashlib
-from collections import defaultdict
+from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any
 
 from bioseqflow.core.base import PreprocessingModule
 from bioseqflow.utils.io import FastqRecord, read_fastq, write_fastq
 from bioseqflow.utils.validators import validate_file_path
+
+
+def hamming_distance(seq1: str, seq2: str) -> int:
+    """
+    Calculate Hamming distance between two sequences.
+
+    Args:
+        seq1: First sequence
+        seq2: Second sequence
+
+    Returns:
+        Number of mismatches
+
+    Raises:
+        ValueError: If sequences have different lengths
+    """
+    if len(seq1) != len(seq2):
+        raise ValueError(f"Sequences must be same length: {len(seq1)} vs {len(seq2)}")
+
+    return sum(c1 != c2 for c1, c2 in zip(seq1, seq2))
+
+
+def cluster_umis_directional(
+    umis: list[str], max_distance: int = 1
+) -> dict[str, str]:
+    """
+    Cluster UMIs using directional method (Smith et al., 2017).
+
+    This method handles sequencing errors in UMIs by clustering similar
+    UMIs (within max_distance mismatches) together. Uses directional
+    approach where higher-count UMIs absorb lower-count UMIs.
+
+    Algorithm:
+    1. Count UMI frequencies
+    2. Sort by frequency (descending)
+    3. For each UMI, merge UMIs within max_distance if they have lower counts
+    4. Return mapping of original UMI → representative UMI
+
+    Args:
+        umis: List of UMI sequences
+        max_distance: Maximum Hamming distance for clustering (1-2 recommended)
+
+    Returns:
+        Dictionary mapping each UMI to its representative (cluster center)
+
+    References:
+        Smith, T., et al. (2017). "UMI-tools: modeling sequencing errors
+        in Unique Molecular Identifiers to improve quantification accuracy."
+        Genome Research, 27(3), 491-499.
+    """
+    if not umis:
+        return {}
+
+    # Count UMI frequencies
+    umi_counts = Counter(umis)
+
+    # Sort UMIs by count (descending), then alphabetically for ties
+    sorted_umis = sorted(umi_counts.keys(), key=lambda x: (-umi_counts[x], x))
+
+    # Initialize mapping: each UMI maps to itself
+    umi_mapping: dict[str, str] = {umi: umi for umi in umi_counts.keys()}
+
+    # Directional clustering
+    for i, umi1 in enumerate(sorted_umis):
+        # Skip if this UMI was already merged into another
+        if umi_mapping[umi1] != umi1:
+            continue
+
+        # Check all lower-count UMIs
+        for umi2 in sorted_umis[i + 1:]:
+            # Skip if already merged
+            if umi_mapping[umi2] != umi2:
+                continue
+
+            # Skip if counts are equal (avoid arbitrary merging)
+            if umi_counts[umi1] == umi_counts[umi2]:
+                continue
+
+            # Calculate Hamming distance
+            try:
+                distance = hamming_distance(umi1, umi2)
+
+                # Merge if within threshold
+                if distance <= max_distance:
+                    umi_mapping[umi2] = umi1
+
+            except ValueError:
+                # Different length UMIs - skip
+                continue
+
+    return umi_mapping
 
 
 class DuplicateRemover(PreprocessingModule):
@@ -133,7 +224,7 @@ class DuplicateRemover(PreprocessingModule):
 
         # Write unique reads
         write_fastq(
-            seen_sequences.values(),
+            list(seen_sequences.values()),
             output_file,
             compress=str(output_file).endswith(".gz")
         )
@@ -193,7 +284,7 @@ class DuplicateRemover(PreprocessingModule):
 
         # Write unique reads
         write_fastq(
-            seen_hashes.values(),
+            list(seen_hashes.values()),
             output_file,
             compress=str(output_file).endswith(".gz")
         )
@@ -203,8 +294,6 @@ class DuplicateRemover(PreprocessingModule):
             "unique_reads": unique_reads,
             "duplicates": duplicates,
             "duplication_rate": (duplicates / total_reads * 100) if total_reads > 0 else 0,
-            "method": "hash",
-            "memory_efficient": True,
         }
 
         return self.stats
@@ -253,7 +342,7 @@ class DuplicateRemover(PreprocessingModule):
 
         # Write unique reads
         write_fastq(
-            seen_prefixes.values(),
+            list(seen_prefixes.values()),
             output_file,
             compress=str(output_file).endswith(".gz")
         )
@@ -263,8 +352,6 @@ class DuplicateRemover(PreprocessingModule):
             "unique_reads": unique_reads,
             "duplicates": duplicates,
             "duplication_rate": (duplicates / total_reads * 100) if total_reads > 0 else 0,
-            "method": "prefix",
-            "prefix_length": prefix_length,
         }
 
         return self.stats
@@ -320,18 +407,30 @@ class UMIDeduplicator(PreprocessingModule):
         output_file: Path | str,
         umi_length: int = 8,
         umi_location: str = "start",
+        error_correction: bool = True,
+        max_edit_distance: int = 1,
     ) -> dict[str, int | float]:
         """
-        Deduplicate reads using UMIs.
+        Deduplicate reads using UMIs with optional error correction.
+
+        BIOLOGICAL ENHANCEMENT: Error correction handles sequencing errors in UMIs.
+        Without correction, PCR duplicates with UMI errors are counted as unique
+        molecules, inflating library complexity by 2-10x.
 
         Args:
             input_file: Input FASTQ file
             output_file: Output FASTQ file
             umi_length: Length of UMI sequence
             umi_location: UMI location ('start' or 'end')
+            error_correction: Use directional clustering to correct UMI errors
+            max_edit_distance: Maximum Hamming distance for UMI clustering (1-2)
 
         Returns:
             Deduplication statistics
+
+        References:
+            Smith, T., et al. (2017). "UMI-tools: modeling sequencing errors..."
+            Genome Research, 27(3), 491-499.
         """
         input_file = Path(input_file)
         output_file = Path(output_file)
@@ -342,9 +441,12 @@ class UMIDeduplicator(PreprocessingModule):
         total_reads = 0
         unique_umis = 0
         duplicates = 0
+        umis_before_correction = 0
+        umis_after_correction = 0
 
         # Group by UMI
         umi_groups: dict[str, list[FastqRecord]] = defaultdict(list)
+        all_umis: list[str] = []
 
         for record in read_fastq(input_file):
             total_reads += 1
@@ -365,6 +467,23 @@ class UMIDeduplicator(PreprocessingModule):
             )
 
             umi_groups[umi].append(trimmed_record)
+            all_umis.append(umi)
+
+        umis_before_correction = len(umi_groups)
+
+        # Apply error correction if requested
+        if error_correction:
+            # Cluster similar UMIs
+            umi_mapping = cluster_umis_directional(all_umis, max_distance=max_edit_distance)
+
+            # Merge groups based on clustering
+            corrected_groups: dict[str, list[FastqRecord]] = defaultdict(list)
+            for umi, records in umi_groups.items():
+                representative_umi = umi_mapping[umi]
+                corrected_groups[representative_umi].extend(records)
+
+            umi_groups = corrected_groups
+            umis_after_correction = len(umi_groups)
 
         # Keep best quality read from each UMI group
         unique_records = []
@@ -386,5 +505,14 @@ class UMIDeduplicator(PreprocessingModule):
             "duplication_rate": (duplicates / total_reads * 100) if total_reads > 0 else 0,
             "umi_length": umi_length,
         }
+
+        # Add error correction stats if used
+        if error_correction:
+            self.stats["umis_before_correction"] = umis_before_correction
+            self.stats["umis_after_correction"] = umis_after_correction
+            self.stats["umis_merged"] = umis_before_correction - umis_after_correction
+            self.stats["correction_rate"] = (
+                (umis_before_correction - umis_after_correction) / umis_before_correction * 100
+            ) if umis_before_correction > 0 else 0
 
         return self.stats
