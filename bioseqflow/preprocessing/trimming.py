@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from bioseqflow.core.base import PreprocessingModule
+from bioseqflow.utils.alignment import find_adapter_fuzzy
 from bioseqflow.utils.io import FastqRecord, read_fastq, write_fastq
 from bioseqflow.utils.validators import (
     validate_adapter_sequence,
@@ -74,6 +75,8 @@ class AdapterTrimmer(PreprocessingModule):
         output_file: Path | str,
         adapter: str,
         use_cutadapt: bool = True,
+        fuzzy_match: bool = False,
+        max_error_rate: float = 0.15,
     ) -> dict[str, int | float]:
         """
         Trim adapter sequences from reads.
@@ -83,12 +86,20 @@ class AdapterTrimmer(PreprocessingModule):
             output_file: Output FASTQ file
             adapter: Adapter sequence to trim
             use_cutadapt: Use cutadapt if available, else use built-in trimmer
+            fuzzy_match: Use Smith-Waterman fuzzy matching (only for built-in)
+            max_error_rate: Maximum error rate for fuzzy matching (0.0-1.0)
 
         Returns:
             Dictionary with trimming statistics
 
         Raises:
             RuntimeError: If trimming fails
+
+        Notes:
+            - Fuzzy matching uses Smith-Waterman local alignment
+            - Allows mismatches and partial adapter matches
+            - Recommended for degraded samples or high error rates
+            - cutadapt always uses fuzzy matching internally
         """
         input_file = Path(input_file)
         output_file = Path(output_file)
@@ -100,9 +111,13 @@ class AdapterTrimmer(PreprocessingModule):
                 return self._trim_with_cutadapt(input_file, output_file, adapter)
             except (FileNotFoundError, RuntimeError):
                 # Fall back to built-in trimmer
-                return self._trim_builtin(input_file, output_file, adapter)
+                return self._trim_builtin(
+                    input_file, output_file, adapter, fuzzy_match, max_error_rate
+                )
         else:
-            return self._trim_builtin(input_file, output_file, adapter)
+            return self._trim_builtin(
+                input_file, output_file, adapter, fuzzy_match, max_error_rate
+            )
 
     def _trim_with_cutadapt(
         self, input_file: Path, output_file: Path, adapter: str
@@ -146,15 +161,22 @@ class AdapterTrimmer(PreprocessingModule):
             ) from e
 
     def _trim_builtin(
-        self, input_file: Path, output_file: Path, adapter: str
+        self,
+        input_file: Path,
+        output_file: Path,
+        adapter: str,
+        fuzzy_match: bool = False,
+        max_error_rate: float = 0.15,
     ) -> dict[str, int | float]:
         """
-        Built-in adapter trimming (simple implementation).
+        Built-in adapter trimming with optional fuzzy matching.
 
         Args:
             input_file: Input file
             output_file: Output file
             adapter: Adapter sequence
+            fuzzy_match: Use Smith-Waterman fuzzy matching
+            max_error_rate: Maximum error rate for fuzzy matching
 
         Returns:
             Trimming statistics
@@ -169,8 +191,21 @@ class AdapterTrimmer(PreprocessingModule):
             nonlocal total_reads, trimmed_reads, total_bp_removed
             total_reads += 1
 
-            # Find adapter sequence
-            adapter_pos = record.sequence.find(adapter)
+            adapter_pos = -1
+
+            if fuzzy_match:
+                # Use Smith-Waterman fuzzy matching
+                result = find_adapter_fuzzy(
+                    record.sequence,
+                    adapter,
+                    min_overlap=self.min_overlap,
+                    max_error_rate=max_error_rate,
+                )
+                if result is not None:
+                    adapter_pos = result[0]  # Start position
+            else:
+                # Use exact string matching
+                adapter_pos = record.sequence.find(adapter)
 
             if adapter_pos != -1:
                 trimmed_reads += 1
