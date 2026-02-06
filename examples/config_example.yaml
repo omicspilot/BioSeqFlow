@@ -1,0 +1,26 @@
+# BioSeqFlow Configuration Example
+# This file shows all available configuration options
+
+# Quality filtering parameters
+min_quality: 20              # Minimum Phred quality score (0-93)
+min_length: 50               # Minimum read length after trimming
+max_length: null             # Maximum read length (null = no limit)
+
+# Adapter parameters
+adapter_sequence: "AGATCGGAAGAG"  # Standard Illumina adapter
+adapter_r2: null             # Adapter for R2 (paired-end reads)
+
+# Processing parameters
+threads: 4                   # Number of CPU threads to use
+chunk_size: 10000           # Chunk size for batch processing
+
+# Output parameters
+output_dir: "./output"       # Output directory path
+keep_intermediate: false     # Keep intermediate files
+compress_output: true        # Compress output FASTQ files
+
+# QC thresholds
+min_base_quality: 20         # Minimum per-base quality
+gc_content_min: 0.2          # Minimum acceptable GC content (20%)
+gc_content_max: 0.8          # Maximum acceptable GC content (80%)
+duplication_threshold: 0.7   # Duplication level threshold
