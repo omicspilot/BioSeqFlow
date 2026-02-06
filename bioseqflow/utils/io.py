@@ -3,8 +3,9 @@ from __future__ import annotations
 """I/O utilities for reading and writing sequence files."""
 
 import gzip
+from collections.abc import Generator
 from pathlib import Path
-from typing import Generator, TextIO
+from typing import IO, Any
 
 import pandas as pd
 
@@ -55,7 +56,7 @@ class FastqRecord:
         return f"{self.header}\n{self.sequence}\n{self.plus}\n{self.quality}\n"
 
 
-def open_file(file_path: Path | str, mode: str = "r") -> TextIO:
+def open_file(file_path: Path | str, mode: str = "r") -> IO[str]:
     """
     Open a file, handling gzip compression automatically.
 
@@ -75,7 +76,7 @@ def open_file(file_path: Path | str, mode: str = "r") -> TextIO:
         raise FileNotFoundError(f"File not found: {file_path}")
 
     if file_path.suffix == ".gz":
-        return gzip.open(file_path, mode + "t", encoding="utf-8")
+        return gzip.open(file_path, mode + "t", encoding="utf-8")  # type: ignore[return-value]
     return open(file_path, mode, encoding="utf-8")
 
 
@@ -195,7 +196,8 @@ def parse_sample_sheet(
     if missing_cols:
         raise ValueError(f"Missing required columns: {missing_cols}")
 
-    return df.to_dict("records")
+    records: list[dict[str, str]] = df.to_dict("records")
+    return records
 
 
 def count_reads(file_path: Path | str) -> int:

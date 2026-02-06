@@ -6,7 +6,6 @@ from typing import Any
 
 import numpy as np
 
-
 # Experiment-specific scoring profiles
 SCORING_PROFILES = {
     "wgs": {  # Whole Genome Sequencing

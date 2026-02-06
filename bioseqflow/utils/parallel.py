@@ -3,8 +3,9 @@ from __future__ import annotations
 """Parallel processing utilities for efficient batch operations."""
 
 import multiprocessing as mp
+from collections.abc import Iterable
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, as_completed
-from typing import Any, Callable, Iterable
+from typing import Any, Callable
 
 from tqdm import tqdm
 

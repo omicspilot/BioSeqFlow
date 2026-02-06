@@ -53,6 +53,16 @@ class QCModule(BaseModule):
         super().__init__(config)
         self.results: dict[str, Any] = {}
 
+    def run(self, *args: Any, **kwargs: Any) -> dict[str, Any]:
+        """
+        Execute the module's main functionality.
+
+        Returns:
+            Module results
+        """
+        # Default implementation - subclasses can override
+        return self.results
+
     @abstractmethod
     def parse_results(self, output_path: Path) -> dict[str, Any]:
         """
@@ -73,7 +83,7 @@ class QCModule(BaseModule):
         Returns:
             Summary statistics dictionary
         """
-        return self.results.get("summary", {})
+        return self.results.get("summary", {})  # type: ignore[no-any-return]
 
 
 class PreprocessingModule(BaseModule):
@@ -88,6 +98,20 @@ class PreprocessingModule(BaseModule):
         """
         super().__init__(config)
         self.stats: dict[str, int | float] = {}
+
+    def run(self, input_file: Path, output_file: Path, **kwargs: Any) -> dict[str, int | float]:
+        """
+        Execute the module's main functionality (delegates to process).
+
+        Args:
+            input_file: Input file path
+            output_file: Output file path
+            **kwargs: Additional arguments
+
+        Returns:
+            Processing statistics
+        """
+        return self.process(input_file, output_file, **kwargs)
 
     @abstractmethod
     def process(self, input_file: Path, output_file: Path) -> dict[str, int | float]:

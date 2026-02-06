@@ -6,8 +6,7 @@ from pathlib import Path
 from typing import Any
 
 import yaml
-from pydantic import BaseModel, Field, field_validator
-
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 # Organism-specific GC content profiles
 GC_PROFILES = {
@@ -68,10 +67,7 @@ class Config(BaseModel):
         description="Organism profile for GC thresholds (overrides gc_content_min/max)"
     )
 
-    class Config:
-        """Pydantic configuration."""
-
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     @field_validator("output_dir")
     @classmethod
@@ -98,7 +94,7 @@ class Config(BaseModel):
                 )
 
     @classmethod
-    def from_yaml(cls, yaml_path: Path | str) -> "Config":
+    def from_yaml(cls, yaml_path: Path | str) -> Config:
         """
         Load configuration from YAML file.
 
@@ -131,9 +127,15 @@ class Config(BaseModel):
         yaml_path = Path(yaml_path)
         yaml_path.parent.mkdir(parents=True, exist_ok=True)
 
+        # Convert to dict and ensure Path objects are strings
+        config_dict = self.model_dump(mode="python")
+        # Convert Path objects to strings for YAML serialization
+        if "output_dir" in config_dict and isinstance(config_dict["output_dir"], Path):
+            config_dict["output_dir"] = str(config_dict["output_dir"])
+
         with open(yaml_path, "w") as f:
             yaml.safe_dump(
-                self.model_dump(mode="python"),
+                config_dict,
                 f,
                 default_flow_style=False,
                 sort_keys=False,
