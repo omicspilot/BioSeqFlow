@@ -154,7 +154,7 @@ def validate_paired_files(
 
                 if r1_id != r2_id:
                     errors.append(
-                        f"Read ID mismatch at pair {pairs_checked}: " f"R1={r1_id}, R2={r2_id}"
+                        f"Read ID mismatch at pair {pairs_checked}: R1={r1_id}, R2={r2_id}"
                     )
                     # Stop after first mismatch
                     break
@@ -218,9 +218,7 @@ def read_paired_fastq(
                 r2_id = extract_read_id(r2_record.header)
 
                 if r1_id != r2_id:
-                    raise ValueError(
-                        f"Read ID mismatch at pair {pair_num}: " f"R1={r1_id}, R2={r2_id}"
-                    )
+                    raise ValueError(f"Read ID mismatch at pair {pair_num}: R1={r1_id}, R2={r2_id}")
 
             yield PairedRecord(r1_record, r2_record)
 

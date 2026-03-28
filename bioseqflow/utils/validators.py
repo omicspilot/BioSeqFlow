@@ -79,7 +79,7 @@ def validate_sequence(sequence: str, allowed_bases: str = "ACGTN") -> None:
     invalid_bases = set(sequence) - allowed_set
     if invalid_bases:
         raise ValueError(
-            f"Sequence contains invalid bases: {invalid_bases}. " f"Allowed: {allowed_bases}"
+            f"Sequence contains invalid bases: {invalid_bases}. Allowed: {allowed_bases}"
         )
 
 
