@@ -22,13 +22,13 @@ BioSeqFlow is a modular, production-ready platform for automated sequencing qual
 
 ### Key Features
 
-✨ **Paired-End Support** - Complete R1/R2 validation, insert size analysis, and orientation checking
-🎯 **Fuzzy Adapter Matching** - Smith-Waterman alignment detects 30-50% more adapters than exact matching
-📊 **QC Integration** - Programmatic FastQC/MultiQC parsing and analysis
-⚡ **Parallel Processing** - Multiple strategies with automatic worker optimization
-🔒 **Type-Safe** - Full mypy validation with comprehensive type hints
-🧪 **Well-Tested** - 176 tests covering edge cases and error conditions
-🛠️ **Modular Design** - Easy to extend with custom preprocessing modules
+- **Paired-End Support** - Complete R1/R2 validation, insert size analysis, and orientation checking
+- **Fuzzy Adapter Matching** - Smith-Waterman alignment detects 30-50% more adapters than exact matching
+- **QC Integration** - Programmatic FastQC/MultiQC parsing and analysis
+- **Parallel Processing** - Multiple strategies with automatic worker optimization
+- **Type-Safe** - Full mypy validation with comprehensive type hints
+- **Well-Tested** - 176 tests covering edge cases and error conditions
+- **Modular Design** - Easy to extend with custom preprocessing modules
 
 ## Installation
 
@@ -50,7 +50,7 @@ from bioseqflow.preprocessing.trimming import AdapterTrimmer
 
 # Validate paired-end files
 result = validate_paired_files("sample_R1.fastq.gz", "sample_R2.fastq.gz")
-print(f"✓ {result.total_pairs} valid pairs" if result.is_valid else f"✗ {result.errors}")
+print(f"OK: {result.total_pairs} valid pairs" if result.is_valid else f"ERROR: {result.errors}")
 
 # Fuzzy adapter trimming (30-50% better detection)
 trimmer = AdapterTrimmer()
@@ -65,11 +65,9 @@ stats = trimmer.trim(
 
 ## Documentation & Examples
 
-📖 **Full Documentation**: [omicspilot.com/projects/bioseqflow](https://omicspilot.com/projects/bioseqflow)
+**Full Documentation**: [omicspilot.com/projects/bioseqflow](https://omicspilot.com/projects/bioseqflow)
 
-📝 **Usage Examples**: See the CLI `--help` for each command, or use the provided [config_example.yaml](config_example.yaml) and [sample_sheet_example.csv](sample_sheet_example.csv) as starting templates.
-
-🎓 **API Reference**: [docs/usage.md](docs/usage.md)
+**API Reference**: [docs/usage.md](docs/usage.md)
 
 ## Project Structure
 
@@ -112,66 +110,14 @@ bioseqflow/
 - Progress tracking and error handling
 - Memory-efficient batch processing
 
-## Development
-
-### Testing
-
-```bash
-# Run all tests (176 tests)
-pytest
-
-# Run with coverage (74%)
-pytest --cov=bioseqflow --cov-report=html
-
-# Run specific suites
-pytest tests/test_utils/test_paired_end.py    # Paired-end (20 tests)
-pytest tests/test_utils/test_parallel.py      # Parallel (21 tests)
-pytest tests/test_qc/test_parsers.py          # Parsers (12 tests)
-```
-
-### Code Quality
-
-```bash
-# Type checking (mypy clean)
-mypy bioseqflow/
-
-# Linting
-ruff check bioseqflow/ tests/
-
-# Formatting
-ruff format bioseqflow/ tests/
-```
-
-### Test Coverage
-
-| Module | Coverage | Tests |
-|--------|----------|-------|
-| utils/parallel.py | 100% | 21 |
-| qc/parsers.py | 99% | 12 |
-| utils/alignment.py | 99% | 17 |
-| utils/io.py | 96% | 16 |
-| qc/metrics.py | 95% | 12 |
-| utils/paired_end.py | 92% | 20 |
-| preprocessing/deduplication.py | 90% | Edge cases |
-| preprocessing/filtering.py | 90% | Edge cases |
-
 ## Roadmap
 
-### ✅ Completed
-- Core QC functionality with FastQC/MultiQC integration
-- Paired-end sequencing validation and processing
-- Fuzzy adapter matching with Smith-Waterman alignment
-- Advanced parallel processing with automatic optimization
-- QC results parsing (FastQC and MultiQC)
-- Comprehensive test suite (74% coverage, 176 tests)
-- Type-safe codebase with mypy validation
-
-### 🚧 In Progress
+### In Progress
 - Interactive dashboard (Streamlit/Dash)
 - MultiQC report generation
 - Additional visualization modules
 
-### 📋 Planned
+### Planned
 - Long-read sequencing support (PacBio, ONT)
 - Cloud integration (AWS, GCP)
 - RNA-seq specific QC modules
@@ -194,7 +140,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
 If you use BioSeqFlow in your research, please cite:
 
 ```bibtex
-@software{bioseqflow2024,
+@software{bioseqflow2025,
   title = {BioSeqFlow: A Comprehensive Sequencing Quality Control Platform},
   author = {OmicsPilot},
   year = {2024},
@@ -202,17 +148,7 @@ If you use BioSeqFlow in your research, please cite:
 }
 ```
 
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
 ## Support
 
-- 📖 **Documentation**: [omicspilot.com/projects/bioseqflow](https://omicspilot.com/projects/bioseqflow)
-- 💬 **Discussions**: [GitHub Discussions](https://github.com/omicpilot/bioseqflow/discussions)
-- 🐛 **Issues**: [GitHub Issues](https://github.com/omicpilot/bioseqflow/issues)
-- 📧 **Email**: [Contact OmicsPilot](https://omicspilot.com/contact)
-
----
-
-**Built with ❤️ by [OmicsPilot](https://omicspilot.com)** | Democratizing bioinformatics for researchers worldwide
+- **Discussions**: [GitHub Discussions](https://github.com/omicpilot/bioseqflow/discussions)
+- **Issues**: [GitHub Issues](https://github.com/omicpilot/bioseqflow/issues)
