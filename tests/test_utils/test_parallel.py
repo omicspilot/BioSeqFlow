@@ -97,18 +97,14 @@ class TestProcessSamplesParallel:
     def test_process_samples_parallel_empty_list(self):
         """Test with empty sample list."""
         samples: list[int] = []
-        results = process_samples_parallel(
-            samples, simple_function, show_progress=False
-        )
+        results = process_samples_parallel(samples, simple_function, show_progress=False)
 
         assert results == []
 
     def test_process_samples_parallel_single_item(self):
         """Test with single item."""
         samples = [5]
-        results = process_samples_parallel(
-            samples, simple_function, show_progress=False
-        )
+        results = process_samples_parallel(samples, simple_function, show_progress=False)
 
         assert results == [10]
 
@@ -139,11 +135,7 @@ class TestProcessSamplesParallel:
         samples = [1, 2, 3]
         # Just test that it doesn't crash with progress enabled
         results = process_samples_parallel(
-            samples,
-            simple_function,
-            n_workers=2,
-            show_progress=True,
-            description="Testing"
+            samples, simple_function, n_workers=2, show_progress=True, description="Testing"
         )
 
         assert results == [2, 4, 6]
@@ -169,9 +161,7 @@ class TestProcessWithMap:
     def test_process_with_map_chunksize(self):
         """Test with custom chunksize."""
         items = list(range(10))
-        results = process_with_map(
-            simple_function, items, n_workers=2, chunksize=2
-        )
+        results = process_with_map(simple_function, items, n_workers=2, chunksize=2)
 
         expected = [x * 2 for x in range(10)]
         assert results == expected

@@ -170,17 +170,21 @@ class TestMultiQCParser:
 
         # Create general stats file
         general_stats = multiqc_dir / "multiqc_general_stats.txt"
-        general_stats.write_text("""Sample	Total Sequences	%GC	Avg Quality
+        general_stats.write_text(
+            """Sample	Total Sequences	%GC	Avg Quality
 sample1	1000	45	35.5
 sample2	2000	42	36.2
-""")
+"""
+        )
 
         # Create FastQC data file
         fastqc_data = multiqc_dir / "multiqc_fastqc.txt"
-        fastqc_data.write_text("""Sample	total_sequences	percent_gc	avg_sequence_length
+        fastqc_data.write_text(
+            """Sample	total_sequences	percent_gc	avg_sequence_length
 sample1	1000	45.0	150
 sample2	2000	42.0	150
-""")
+"""
+        )
 
         parser = MultiQCParser()
         results = parser.parse(multiqc_dir)
@@ -223,9 +227,11 @@ sample2	2000	42.0	150
         multiqc_dir.mkdir()
 
         general_stats = multiqc_dir / "multiqc_general_stats.txt"
-        general_stats.write_text("""Sample	Total Sequences
+        general_stats.write_text(
+            """Sample	Total Sequences
 sample1	1000
-""")
+"""
+        )
 
         parser = MultiQCParser()
         results = parser.parse(multiqc_dir)
@@ -239,10 +245,12 @@ sample1	1000
         multiqc_dir.mkdir()
 
         fastqc_data = multiqc_dir / "multiqc_fastqc.txt"
-        fastqc_data.write_text("""Sample	total_sequences
+        fastqc_data.write_text(
+            """Sample	total_sequences
 sample1	1000
 sample2	2000
-""")
+"""
+        )
 
         parser = MultiQCParser()
         results = parser.parse(multiqc_dir)
@@ -256,12 +264,14 @@ sample2	2000
         multiqc_dir.mkdir()
 
         general_stats = multiqc_dir / "multiqc_general_stats.txt"
-        general_stats.write_text("""Sample	Reads	GC
+        general_stats.write_text(
+            """Sample	Reads	GC
 sample1	100	45
 sample2	200	42
 sample3	300	48
 sample4	400	50
-""")
+"""
+        )
 
         parser = MultiQCParser()
         results = parser.parse(multiqc_dir)

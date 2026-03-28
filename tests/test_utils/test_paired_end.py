@@ -171,14 +171,8 @@ class TestValidatePairedFiles:
         r2_file = tmp_path / "test_R2.fastq"
 
         # Create 10 pairs
-        r1_records = [
-            FastqRecord(f"@read{i}\n", "ATCG\n", "+\n", "IIII\n")
-            for i in range(10)
-        ]
-        r2_records = [
-            FastqRecord(f"@read{i}\n", "CGAT\n", "+\n", "IIII\n")
-            for i in range(10)
-        ]
+        r1_records = [FastqRecord(f"@read{i}\n", "ATCG\n", "+\n", "IIII\n") for i in range(10)]
+        r2_records = [FastqRecord(f"@read{i}\n", "CGAT\n", "+\n", "IIII\n") for i in range(10)]
 
         write_fastq(r1_records, r1_file)
         write_fastq(r2_records, r2_file)
@@ -338,12 +332,10 @@ class TestInsertSizeDistribution:
 
         # Create 10 pairs
         r1_records = [
-            FastqRecord(f"@read{i}\n", "A" * 100 + "\n", "+\n", "I" * 100 + "\n")
-            for i in range(10)
+            FastqRecord(f"@read{i}\n", "A" * 100 + "\n", "+\n", "I" * 100 + "\n") for i in range(10)
         ]
         r2_records = [
-            FastqRecord(f"@read{i}\n", "T" * 100 + "\n", "+\n", "I" * 100 + "\n")
-            for i in range(10)
+            FastqRecord(f"@read{i}\n", "T" * 100 + "\n", "+\n", "I" * 100 + "\n") for i in range(10)
         ]
 
         write_fastq(r1_records, r1_file)

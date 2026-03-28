@@ -39,9 +39,7 @@ class TestQualityFilter:
         """Test filtering by read length."""
         output_file = temp_dir / "filtered.fastq"
 
-        stats = filter_module.filter(
-            sample_fastq_file, output_file, min_quality=0, min_length=100
-        )
+        stats = filter_module.filter(sample_fastq_file, output_file, min_quality=0, min_length=100)
 
         assert stats["total_reads"] >= 0
         assert stats["passed_reads"] <= stats["total_reads"]
@@ -52,9 +50,7 @@ class TestQualityFilter:
         """Test filtering statistics."""
         output_file = temp_dir / "filtered.fastq"
 
-        stats = filter_module.filter(
-            sample_fastq_file, output_file, min_quality=0, min_length=10
-        )
+        stats = filter_module.filter(sample_fastq_file, output_file, min_quality=0, min_length=10)
 
         assert "failed_quality" in stats
         assert "failed_length" in stats
@@ -93,9 +89,7 @@ class TestLengthFilter:
         """Test filtering by maximum length."""
         output_file = temp_dir / "length_filtered.fastq"
 
-        stats = filter_module.filter(
-            sample_fastq_file, output_file, min_length=10, max_length=100
-        )
+        stats = filter_module.filter(sample_fastq_file, output_file, min_length=10, max_length=100)
 
         assert "too_long" in stats
         assert "too_short" in stats
@@ -106,9 +100,7 @@ class TestLengthFilter:
         """Test length filter statistics."""
         output_file = temp_dir / "length_filtered.fastq"
 
-        stats = filter_module.filter(
-            sample_fastq_file, output_file, min_length=30, max_length=200
-        )
+        stats = filter_module.filter(sample_fastq_file, output_file, min_length=30, max_length=200)
 
         assert stats["total_reads"] == (
             stats["passed_reads"] + stats["too_short"] + stats["too_long"]

@@ -20,9 +20,7 @@ class TestFastqRecord:
 
     def test_fastq_record_creation(self) -> None:
         """Test creating a FASTQ record."""
-        record = FastqRecord(
-            "@SEQ_ID", "GATTTGGGGTTCAAAGCAGTATCG", "+", "!''*((((***+))%%%++)(%%"
-        )
+        record = FastqRecord("@SEQ_ID", "GATTTGGGGTTCAAAGCAGTATCG", "+", "!''*((((***+))%%%++)(%%")
 
         assert record.header == "@SEQ_ID"
         assert record.sequence == "GATTTGGGGTTCAAAGCAGTATCG"

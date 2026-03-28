@@ -115,7 +115,9 @@ def qc(input_file: str, output_dir: str, threads: int, quiet: bool) -> None:
         metrics = QualityMetrics()
         score = metrics.calculate_composite_score(results)
         click.echo()
-        click.echo("Composite Quality Score: " + click.style(f"{score:.1f}/100", fg="yellow", bold=True))
+        click.echo(
+            "Composite Quality Score: " + click.style(f"{score:.1f}/100", fg="yellow", bold=True)
+        )
 
         if score >= 90:
             echo_success("Quality: Excellent")
@@ -581,8 +583,7 @@ def insert_size(r1: str, r2: str, max_reads: int) -> None:
     click.echo(click.style("Insert Size Statistics:", fg="cyan", bold=True))
     click.echo(f"  Pairs analyzed: {stats['pairs_analyzed']:,}")
     click.echo(
-        "  Mean: "
-        + click.style(f"{stats['mean_insert_size']:.1f} bp", fg="yellow", bold=True)
+        "  Mean: " + click.style(f"{stats['mean_insert_size']:.1f} bp", fg="yellow", bold=True)
     )
     click.echo(f"  Median: {stats['median_insert_size']:.1f} bp")
     click.echo(f"  Std dev: {stats['std_insert_size']:.1f} bp")
@@ -627,10 +628,12 @@ def check_orientation_cmd(r1: str, r2: str, max_reads: int) -> None:
     click.echo(f"  Length difference: {stats['mean_length_diff']:.1f} bp")
 
     click.echo()
-    if stats['length_consistent']:
+    if stats["length_consistent"]:
         echo_success("Read lengths are consistent (diff < 5 bp)")
     else:
-        echo_warning(f"Read lengths differ significantly (mean diff: {stats['mean_length_diff']:.1f} bp)")
+        echo_warning(
+            f"Read lengths differ significantly (mean diff: {stats['mean_length_diff']:.1f} bp)"
+        )
 
 
 @cli.command(name="parse-qc")

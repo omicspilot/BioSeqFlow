@@ -8,7 +8,7 @@ version = "0.1.0"
 description = "A comprehensive sequencing quality control and preprocessing platform"
 readme = "README.md"
 authors = [
-    {name = "OmicsPilot", email = "your.email@example.com"}
+    {name = "OmicsPilot", email = "info@omicspilot.com"}
 ]
 license = {text = "MIT"}
 requires-python = ">=3.9"

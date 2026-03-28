@@ -76,9 +76,7 @@ def process_samples_parallel(
         # Collect results with progress bar
         iterator = as_completed(future_to_idx)
         if show_progress:
-            iterator = tqdm(
-                iterator, total=len(samples), desc=description, unit="sample"
-            )
+            iterator = tqdm(iterator, total=len(samples), desc=description, unit="sample")
 
         for future in iterator:
             idx = future_to_idx[future]

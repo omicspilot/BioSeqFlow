@@ -115,9 +115,7 @@ class AdapterTrimmer(PreprocessingModule):
                     input_file, output_file, adapter, fuzzy_match, max_error_rate
                 )
         else:
-            return self._trim_builtin(
-                input_file, output_file, adapter, fuzzy_match, max_error_rate
-            )
+            return self._trim_builtin(input_file, output_file, adapter, fuzzy_match, max_error_rate)
 
     def _trim_with_cutadapt(
         self, input_file: Path, output_file: Path, adapter: str
@@ -156,9 +154,7 @@ class AdapterTrimmer(PreprocessingModule):
             return self.stats
 
         except FileNotFoundError as e:
-            raise RuntimeError(
-                "cutadapt not found. Install with: pip install cutadapt"
-            ) from e
+            raise RuntimeError("cutadapt not found. Install with: pip install cutadapt") from e
 
     def _trim_builtin(
         self,
@@ -260,9 +256,7 @@ class AdapterTrimmer(PreprocessingModule):
 
         # Calculate percentage
         if "total_reads" in stats and "trimmed_reads" in stats:
-            stats["percent_trimmed"] = (
-                stats["trimmed_reads"] / stats["total_reads"] * 100
-            )
+            stats["percent_trimmed"] = stats["trimmed_reads"] / stats["total_reads"] * 100
 
         return stats
 
@@ -385,7 +379,7 @@ class QualityTrimmer(PreprocessingModule):
             # Check if trimming occurred
             if start > 0 or end < original_length:
                 trimmed_reads += 1
-                total_bp_removed += (start + (original_length - end))
+                total_bp_removed += start + (original_length - end)
 
             return FastqRecord(
                 record.header,
@@ -396,7 +390,8 @@ class QualityTrimmer(PreprocessingModule):
 
         # Process records and filter out None (all-low-quality reads)
         trimmed_records = (
-            trimmed for record in read_fastq(input_file)
+            trimmed
+            for record in read_fastq(input_file)
             if (trimmed := trim_record(record)) is not None
         )
         written = write_fastq(

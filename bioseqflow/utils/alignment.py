@@ -164,11 +164,7 @@ def find_adapter_fuzzy(
         return None
 
     # Calculate error rate (mismatches + gaps)
-    mismatches = sum(
-        1
-        for q, t in zip(alignment.aligned_query, alignment.aligned_target)
-        if q != t
-    )
+    mismatches = sum(1 for q, t in zip(alignment.aligned_query, alignment.aligned_target) if q != t)
     error_rate = mismatches / aligned_length if aligned_length > 0 else 1.0
 
     if error_rate > max_error_rate:
@@ -177,9 +173,7 @@ def find_adapter_fuzzy(
     return (alignment.start, alignment.end)
 
 
-def calculate_match_score(
-    query: str, target: str, start: int, end: int
-) -> float:
+def calculate_match_score(query: str, target: str, start: int, end: int) -> float:
     """
     Calculate alignment quality score.
 
@@ -201,10 +195,6 @@ def calculate_match_score(
     if len(query_prefix) == 0:
         return 0.0
 
-    matches = sum(
-        1
-        for q, t in zip(query_prefix.upper(), aligned_region.upper())
-        if q == t
-    )
+    matches = sum(1 for q, t in zip(query_prefix.upper(), aligned_region.upper()) if q == t)
 
     return matches / len(query_prefix)

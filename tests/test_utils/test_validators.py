@@ -31,9 +31,7 @@ class TestFilePathValidation:
 
     def test_validate_nonexistent_file_optional(self, temp_dir: Path) -> None:
         """Test validating non-existent file when optional."""
-        result = validate_file_path(
-            temp_dir / "new_file.fastq", must_exist=False
-        )
+        result = validate_file_path(temp_dir / "new_file.fastq", must_exist=False)
 
         assert isinstance(result, Path)
 

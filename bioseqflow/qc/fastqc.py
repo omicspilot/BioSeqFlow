@@ -86,9 +86,7 @@ class FastQCRunner(QCModule):
             cmd.append("--quiet")
 
         try:
-            result = subprocess.run(
-                cmd, check=True, capture_output=True, text=True
-            )
+            result = subprocess.run(cmd, check=True, capture_output=True, text=True)
 
             # Parse the output
             self.results = self.parse_results(output_dir)
@@ -97,9 +95,7 @@ class FastQCRunner(QCModule):
             return self.results
 
         except subprocess.CalledProcessError as e:
-            raise RuntimeError(
-                f"FastQC failed with error: {e.stderr}"
-            ) from e
+            raise RuntimeError(f"FastQC failed with error: {e.stderr}") from e
         except FileNotFoundError as e:
             raise RuntimeError(
                 "FastQC not found. Please install FastQC and ensure it's in your PATH."

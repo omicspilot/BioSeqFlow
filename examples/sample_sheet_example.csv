@@ -1,4 +1,0 @@
-sample_id,fastq_r1,fastq_r2,adapter,min_quality,min_length
-sample1,data/sample1_R1.fastq.gz,data/sample1_R2.fastq.gz,AGATCGGAAGAG,20,50
-sample2,data/sample2_R1.fastq.gz,data/sample2_R2.fastq.gz,AGATCGGAAGAG,25,75
-sample3,data/sample3_R1.fastq.gz,,AGATCGGAAGAG,20,50

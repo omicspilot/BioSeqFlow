@@ -3,6 +3,7 @@
 import pytest
 
 from bioseqflow.qc.metrics import QualityMetrics
+from bioseqflow.utils.io import FastqRecord
 
 
 class TestQualityMetrics:
@@ -34,7 +35,9 @@ class TestQualityMetrics:
         }
 
     def test_calculate_composite_score(
-        self, metrics: QualityMetrics, sample_fastqc_data: dict  # type: ignore[type-arg]
+        self,
+        metrics: QualityMetrics,
+        sample_fastqc_data: dict,  # type: ignore[type-arg]
     ) -> None:
         """Test composite score calculation."""
         score = metrics.calculate_composite_score(sample_fastqc_data)
@@ -43,7 +46,9 @@ class TestQualityMetrics:
         assert 0 <= score <= 100
 
     def test_score_base_quality_pass(
-        self, metrics: QualityMetrics, sample_fastqc_data: dict  # type: ignore[type-arg]
+        self,
+        metrics: QualityMetrics,
+        sample_fastqc_data: dict,  # type: ignore[type-arg]
     ) -> None:
         """Test base quality scoring with PASS."""
         score = metrics._score_base_quality(sample_fastqc_data)
@@ -51,7 +56,9 @@ class TestQualityMetrics:
         assert score == 100
 
     def test_score_base_quality_warn(
-        self, metrics: QualityMetrics, sample_fastqc_data: dict  # type: ignore[type-arg]
+        self,
+        metrics: QualityMetrics,
+        sample_fastqc_data: dict,  # type: ignore[type-arg]
     ) -> None:
         """Test base quality scoring with WARN."""
         sample_fastqc_data["summary"]["Per base sequence quality"] = "WARN"
@@ -60,7 +67,9 @@ class TestQualityMetrics:
         assert score == 70
 
     def test_score_base_quality_fail(
-        self, metrics: QualityMetrics, sample_fastqc_data: dict  # type: ignore[type-arg]
+        self,
+        metrics: QualityMetrics,
+        sample_fastqc_data: dict,  # type: ignore[type-arg]
     ) -> None:
         """Test base quality scoring with FAIL."""
         sample_fastqc_data["summary"]["Per base sequence quality"] = "FAIL"
@@ -82,9 +91,7 @@ class TestQualityMetrics:
         assert dist["min"] == 20
         assert dist["max"] == 40
 
-    def test_calculate_quality_distribution_empty(
-        self, metrics: QualityMetrics
-    ) -> None:
+    def test_calculate_quality_distribution_empty(self, metrics: QualityMetrics) -> None:
         """Test quality distribution with empty list."""
         dist = metrics.calculate_quality_distribution([])
 
@@ -131,3 +138,26 @@ class TestQualityMetrics:
         n_content = metrics.calculate_n_content(sequence)
 
         assert n_content == 0.0
+
+    def test_per_base_quality_known_values(self, metrics: QualityMetrics) -> None:
+        """
+        Stats at each position are correct for known quality strings.
+        """
+        # 'I' = ASCII 73, Q = 73-33 = 40
+        # '5' = ASCII 53, Q = 53-33 = 20
+        # Two reads, same length, deterministic values
+        reads = [
+            FastqRecord("@read1", "ACGT", "+", "IIII"),  # all Q40
+            FastqRecord("@read2", "ACGT", "+", "5555"),  # all Q20
+        ]
+        result = metrics.calculate_per_base_quality(reads)
+
+        # Position 0: scores are [40, 20] → mean=30, min=20, max=40
+        assert result[0]["mean_q"] == 30.0
+        assert result[0]["min"] == 20
+        assert result[0]["max"] == 40
+
+    def test_per_base_quality_empty_reads(self, metrics: QualityMetrics) -> None:
+        """Empty input returns empty dict."""
+        result = metrics.calculate_per_base_quality([])
+        assert result == {}

@@ -32,9 +32,7 @@ def hamming_distance(seq1: str, seq2: str) -> int:
     return sum(c1 != c2 for c1, c2 in zip(seq1, seq2))
 
 
-def cluster_umis_directional(
-    umis: list[str], max_distance: int = 1
-) -> dict[str, str]:
+def cluster_umis_directional(umis: list[str], max_distance: int = 1) -> dict[str, str]:
     """
     Cluster UMIs using directional method (Smith et al., 2017).
 
@@ -79,7 +77,7 @@ def cluster_umis_directional(
             continue
 
         # Check all lower-count UMIs
-        for umi2 in sorted_umis[i + 1:]:
+        for umi2 in sorted_umis[i + 1 :]:
             # Skip if already merged
             if umi_mapping[umi2] != umi2:
                 continue
@@ -115,9 +113,7 @@ class DuplicateRemover(PreprocessingModule):
         """
         super().__init__(config)
 
-    def validate_inputs(
-        self, input_file: Path | str, _output_file: Path | str
-    ) -> None:
+    def validate_inputs(self, input_file: Path | str, _output_file: Path | str) -> None:
         """
         Validate inputs.
 
@@ -218,14 +214,15 @@ class DuplicateRemover(PreprocessingModule):
                 duplicates += 1
 
                 # Keep record with better quality if requested
-                if keep_best and record.mean_quality() > seen_sequences[record.sequence].mean_quality():
+                if (
+                    keep_best
+                    and record.mean_quality() > seen_sequences[record.sequence].mean_quality()
+                ):
                     seen_sequences[record.sequence] = record
 
         # Write unique reads
         write_fastq(
-            list(seen_sequences.values()),
-            output_file,
-            compress=str(output_file).endswith(".gz")
+            list(seen_sequences.values()), output_file, compress=str(output_file).endswith(".gz")
         )
 
         self.stats = {
@@ -282,9 +279,7 @@ class DuplicateRemover(PreprocessingModule):
 
         # Write unique reads
         write_fastq(
-            list(seen_hashes.values()),
-            output_file,
-            compress=str(output_file).endswith(".gz")
+            list(seen_hashes.values()), output_file, compress=str(output_file).endswith(".gz")
         )
 
         self.stats = {
@@ -339,9 +334,7 @@ class DuplicateRemover(PreprocessingModule):
 
         # Write unique reads
         write_fastq(
-            list(seen_prefixes.values()),
-            output_file,
-            compress=str(output_file).endswith(".gz")
+            list(seen_prefixes.values()), output_file, compress=str(output_file).endswith(".gz")
         )
 
         self.stats = {
@@ -366,9 +359,7 @@ class UMIDeduplicator(PreprocessingModule):
         """
         super().__init__(config)
 
-    def validate_inputs(
-        self, input_file: Path | str, _output_file: Path | str
-    ) -> None:
+    def validate_inputs(self, input_file: Path | str, _output_file: Path | str) -> None:
         """
         Validate inputs.
 
@@ -459,9 +450,7 @@ class UMIDeduplicator(PreprocessingModule):
                 trimmed_qual = record.quality[:-umi_length]
 
             # Create trimmed record (without UMI)
-            trimmed_record = FastqRecord(
-                record.header, trimmed_seq, record.plus, trimmed_qual
-            )
+            trimmed_record = FastqRecord(record.header, trimmed_seq, record.plus, trimmed_qual)
 
             umi_groups[umi].append(trimmed_record)
             all_umis.append(umi)
@@ -509,7 +498,9 @@ class UMIDeduplicator(PreprocessingModule):
             self.stats["umis_after_correction"] = umis_after_correction
             self.stats["umis_merged"] = umis_before_correction - umis_after_correction
             self.stats["correction_rate"] = (
-                (umis_before_correction - umis_after_correction) / umis_before_correction * 100
-            ) if umis_before_correction > 0 else 0
+                ((umis_before_correction - umis_after_correction) / umis_before_correction * 100)
+                if umis_before_correction > 0
+                else 0
+            )
 
         return self.stats

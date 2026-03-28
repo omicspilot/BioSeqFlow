@@ -68,9 +68,7 @@ class FastQCParser:
 
         return results
 
-    def _parse_module_data(
-        self, module_name: str, data_lines: list[str]
-    ) -> dict[str, Any]:
+    def _parse_module_data(self, module_name: str, data_lines: list[str]) -> dict[str, Any]:
         """
         Parse individual module data.
 

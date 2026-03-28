@@ -131,14 +131,10 @@ def validate_paired_files(
 
             # Check if one file ended before the other
             if r1_record is None and r2_record is not None:
-                errors.append(
-                    f"R1 file ended at {pairs_checked} reads, but R2 continues"
-                )
+                errors.append(f"R1 file ended at {pairs_checked} reads, but R2 continues")
                 break
             elif r1_record is not None and r2_record is None:
-                errors.append(
-                    f"R2 file ended at {pairs_checked} reads, but R1 continues"
-                )
+                errors.append(f"R2 file ended at {pairs_checked} reads, but R1 continues")
                 break
             elif r1_record is None and r2_record is None:
                 # Both ended at same time - good!
@@ -158,8 +154,7 @@ def validate_paired_files(
 
                 if r1_id != r2_id:
                     errors.append(
-                        f"Read ID mismatch at pair {pairs_checked}: "
-                        f"R1={r1_id}, R2={r2_id}"
+                        f"Read ID mismatch at pair {pairs_checked}: " f"R1={r1_id}, R2={r2_id}"
                     )
                     # Stop after first mismatch
                     break
@@ -224,8 +219,7 @@ def read_paired_fastq(
 
                 if r1_id != r2_id:
                     raise ValueError(
-                        f"Read ID mismatch at pair {pair_num}: "
-                        f"R1={r1_id}, R2={r2_id}"
+                        f"Read ID mismatch at pair {pair_num}: " f"R1={r1_id}, R2={r2_id}"
                     )
 
             yield PairedRecord(r1_record, r2_record)
@@ -236,9 +230,7 @@ def read_paired_fastq(
             next(r2_reader)
             # If we get here, R2 has more reads
             if validate:
-                raise ValueError(
-                    f"R1 file ended at pair {pair_num}, but R2 continues"
-                )
+                raise ValueError(f"R1 file ended at pair {pair_num}, but R2 continues")
         except StopIteration:
             # Good - both files ended at same point
             pass

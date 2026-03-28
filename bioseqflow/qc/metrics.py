@@ -1,11 +1,14 @@
 from __future__ import annotations
 
-from bioseqflow.utils.io import FastqRecord
-
 """Custom quality metrics calculations."""
 
-from typing import Any
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from bioseqflow.utils.io import FastqRecord
+
 from collections import defaultdict
+from typing import Any
 
 import numpy as np
 
@@ -108,9 +111,7 @@ class QualityMetrics:
         scores["duplication"] = self._score_duplication(fastqc_data)
 
         # Calculate weighted average
-        composite_score = sum(
-            scores[metric] * self.weights[metric] for metric in self.weights
-        )
+        composite_score = sum(scores[metric] * self.weights[metric] for metric in self.weights)
 
         return round(composite_score, 2)
 
@@ -224,9 +225,7 @@ class QualityMetrics:
 
         return status_scores.get(module_status, 60)
 
-    def calculate_quality_distribution(
-        self, quality_scores: list[int]
-    ) -> dict[str, float]:
+    def calculate_quality_distribution(self, quality_scores: list[int]) -> dict[str, float]:
         """
         Calculate quality score distribution statistics.
 
@@ -294,8 +293,9 @@ class QualityMetrics:
 
         return (n_count / total) * 100
 
-
-    def calculate_per_base_quality(self, reads: list[FastqRecord], q_type: int = 33) -> dict[int, dict[str, float]]:
+    def calculate_per_base_quality(
+        self, reads: list[FastqRecord], q_type: int = 33
+    ) -> dict[int, dict[str, float]]:
         """
         Calculate the statistics for each position of the different reads.
         Note:
@@ -309,7 +309,7 @@ class QualityMetrics:
         """
         if not reads:
             return {}
-        
+
         scores_by_position = defaultdict(list)
         for read in reads:
             # skip reads with no quality string

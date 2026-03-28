@@ -15,9 +15,7 @@ if TYPE_CHECKING:
 class FastqRecord:
     """Represents a single FASTQ record."""
 
-    def __init__(
-        self, header: str, sequence: str, plus: str, quality: str
-    ) -> None:
+    def __init__(self, header: str, sequence: str, plus: str, quality: str) -> None:
         """
         Initialize FASTQ record.
 
@@ -79,7 +77,7 @@ def open_file(file_path: Path | str, mode: str = "r") -> IO[str]:
 
     if file_path.suffix == ".gz":
         return gzip.open(file_path, mode + "t", encoding="utf-8")  # type: ignore[return-value]
-    return open(file_path, mode, encoding="utf-8")
+    return open(file_path, mode, encoding="utf-8")  # noqa: SIM115
 
 
 def read_fastq(file_path: Path | str) -> Generator[FastqRecord, None, None]:
@@ -111,14 +109,10 @@ def read_fastq(file_path: Path | str) -> Generator[FastqRecord, None, None]:
             line_num += 1
 
             if not (header and sequence and plus and quality):
-                raise ValueError(
-                    f"Incomplete FASTQ record at line {line_num - 3}"
-                )
+                raise ValueError(f"Incomplete FASTQ record at line {line_num - 3}")
 
             if not header.startswith("@"):
-                raise ValueError(
-                    f"Invalid FASTQ header at line {line_num - 3}: {header.strip()}"
-                )
+                raise ValueError(f"Invalid FASTQ header at line {line_num - 3}: {header.strip()}")
 
             # CRITICAL FIX: Validate sequence and quality lengths match
             seq_len = len(sequence.strip())

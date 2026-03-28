@@ -10,19 +10,19 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 # Organism-specific GC content profiles
 GC_PROFILES = {
-    "human": (0.35, 0.55),         # Homo sapiens: ~40-45% GC
-    "mouse": (0.35, 0.50),         # Mus musculus: ~42% GC
-    "bacteria": (0.25, 0.75),      # Broad range for bacteria
-    "ecoli": (0.45, 0.55),         # E. coli: ~50% GC
-    "yeast": (0.35, 0.45),         # S. cerevisiae: ~38% GC
-    "arabidopsis": (0.32, 0.42),   # A. thaliana: ~36% GC
-    "drosophila": (0.38, 0.48),    # D. melanogaster: ~42% GC
-    "celegans": (0.32, 0.42),      # C. elegans: ~36% GC
-    "malaria": (0.15, 0.25),       # P. falciparum: 19-20% GC (AT-rich)
-    "tb": (0.60, 0.70),            # M. tuberculosis: 65% GC
+    "human": (0.35, 0.55),  # Homo sapiens: ~40-45% GC
+    "mouse": (0.35, 0.50),  # Mus musculus: ~42% GC
+    "bacteria": (0.25, 0.75),  # Broad range for bacteria
+    "ecoli": (0.45, 0.55),  # E. coli: ~50% GC
+    "yeast": (0.35, 0.45),  # S. cerevisiae: ~38% GC
+    "arabidopsis": (0.32, 0.42),  # A. thaliana: ~36% GC
+    "drosophila": (0.38, 0.48),  # D. melanogaster: ~42% GC
+    "celegans": (0.32, 0.42),  # C. elegans: ~36% GC
+    "malaria": (0.15, 0.25),  # P. falciparum: 19-20% GC (AT-rich)
+    "tb": (0.60, 0.70),  # M. tuberculosis: 65% GC
     "streptomyces": (0.65, 0.75),  # Streptomyces: ~70% GC
-    "fungi": (0.35, 0.60),         # Broad range for fungi
-    "generic": (0.15, 0.90),       # Very permissive for unknown organisms
+    "fungi": (0.35, 0.60),  # Broad range for fungi
+    "generic": (0.15, 0.90),  # Very permissive for unknown organisms
 }
 
 
@@ -35,12 +35,8 @@ class Config(BaseModel):
     max_length: int | None = Field(default=None, description="Maximum read length")
 
     # Adapter parameters
-    adapter_sequence: str | None = Field(
-        default=None, description="Adapter sequence for trimming"
-    )
-    adapter_r2: str | None = Field(
-        default=None, description="Adapter sequence for R2 (paired-end)"
-    )
+    adapter_sequence: str | None = Field(default=None, description="Adapter sequence for trimming")
+    adapter_r2: str | None = Field(default=None, description="Adapter sequence for R2 (paired-end)")
 
     # Processing parameters
     threads: int = Field(default=1, ge=1, description="Number of threads to use")
@@ -48,9 +44,7 @@ class Config(BaseModel):
 
     # Output parameters
     output_dir: Path = Field(default=Path("./output"), description="Output directory")
-    keep_intermediate: bool = Field(
-        default=False, description="Keep intermediate files"
-    )
+    keep_intermediate: bool = Field(default=False, description="Keep intermediate files")
     compress_output: bool = Field(default=True, description="Compress output files")
 
     # QC thresholds
@@ -64,7 +58,7 @@ class Config(BaseModel):
     duplication_threshold: float = Field(default=0.7, ge=0.0, le=1.0)
     organism: str | None = Field(
         default=None,
-        description="Organism profile for GC thresholds (overrides gc_content_min/max)"
+        description="Organism profile for GC thresholds (overrides gc_content_min/max)",
     )
 
     model_config = ConfigDict(arbitrary_types_allowed=True)

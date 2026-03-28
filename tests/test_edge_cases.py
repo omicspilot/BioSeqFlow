@@ -147,17 +147,23 @@ class TestQualityFilterEdgeCases:
         filter_obj = QualityFilter()
 
         # Should pass with 20% threshold (exactly at boundary)
-        stats = filter_obj.filter(input_file, output, min_quality=0, min_length=10, max_n_content=20.0)
+        stats = filter_obj.filter(
+            input_file, output, min_quality=0, min_length=10, max_n_content=20.0
+        )
         assert stats["passed_reads"] == 1
 
         # Should pass with 21% threshold
         output2 = tmp_path / "filtered2.fastq"
-        stats2 = filter_obj.filter(input_file, output2, min_quality=0, min_length=10, max_n_content=21.0)
+        stats2 = filter_obj.filter(
+            input_file, output2, min_quality=0, min_length=10, max_n_content=21.0
+        )
         assert stats2["passed_reads"] == 1
 
         # Should fail with 19% threshold
         output3 = tmp_path / "filtered3.fastq"
-        stats3 = filter_obj.filter(input_file, output3, min_quality=0, min_length=10, max_n_content=19.0)
+        stats3 = filter_obj.filter(
+            input_file, output3, min_quality=0, min_length=10, max_n_content=19.0
+        )
         assert stats3["passed_reads"] == 0
 
     def test_quality_score_boundaries(self, tmp_path: Path):
@@ -227,8 +233,7 @@ class TestDeduplicationEdgeCases:
         input_file = tmp_path / "many_dup.fastq"
         # Create 1000 copies of same sequence
         records = [
-            FastqRecord(f"@read{i}\n", "ATCGATCG\n", "+\n", "IIIIIIII\n")
-            for i in range(1000)
+            FastqRecord(f"@read{i}\n", "ATCGATCG\n", "+\n", "IIIIIIII\n") for i in range(1000)
         ]
         write_fastq(records, input_file)
 
