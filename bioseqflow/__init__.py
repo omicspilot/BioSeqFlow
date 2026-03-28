@@ -7,7 +7,13 @@ This package provides tools for quality control, preprocessing, and visualizatio
 of sequencing data from various platforms (NGS, long-read, etc.).
 """
 
-__version__ = "0.1.0"
+from importlib.metadata import PackageNotFoundError, version
+
+try:
+    __version__ = version("bioseqflow")
+except PackageNotFoundError:
+    __version__ = "unknown"
+
 __author__ = "OmicsPilot"
 
 from bioseqflow.core.base import PreprocessingModule, QCModule
