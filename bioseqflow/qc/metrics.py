@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+from bioseqflow.utils.io import FastqRecord
+
 """Custom quality metrics calculations."""
 
 from typing import Any
+from collections import defaultdict
 
 import numpy as np
 
@@ -290,3 +293,44 @@ class QualityMetrics:
             return 0.0
 
         return (n_count / total) * 100
+
+
+    def calculate_per_base_quality(self, reads: list[FastqRecord], q_type: int = 33) -> dict[int, dict[str, float]]:
+        """
+        Calculate the statistics for each position of the different reads.
+        Note:
+            - mean_q: arithmetic mean of Q scores (what you have),
+            - mean_error_prob: convert each Q → P, average P, convert back to Q
+
+        Args:
+            reads: a list of FastqRecord objects (varying lengths)
+        Returns:
+            a dict mapping each position index → a dict of stats (mean_q, mean_error_prob, median, q1, q3, min, max)
+        """
+        if not reads:
+            return {}
+        
+        scores_by_position = defaultdict(list)
+        for read in reads:
+            # skip reads with no quality string
+            if not read.quality:
+                continue
+
+            for pos in range(len(read.quality)):
+                score = ord(read.quality[pos]) - q_type
+                # append score in position i
+                scores_by_position[pos].append(score)
+
+        results = {}
+        for pos in scores_by_position:
+            scores = scores_by_position[pos]
+            results[pos] = {
+                "mean_q": float(np.mean(scores)),
+                "median": float(np.median(scores)),
+                "q1": float(np.percentile(scores, 25)),
+                "q3": float(np.percentile(scores, 75)),
+                "min": min(scores),
+                "max": max(scores),
+            }
+
+        return results
