@@ -1,12 +1,20 @@
-# BioSeqFlow
+<div align="center">
+  <h1>BioSeqFlow</h1>
+  <h2>NGS Quality Control & Preprocessing Pipeline</h2>
+  <p>
+    <b>A comprehensive, type-safe platform for automated sequencing quality control and preprocessing. Trim adapters, filter reads, detect duplicates, and analyze paired-end data — with fuzzy matching and parallel processing built in.</b>
+  </p>
+  <p>
+    <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT"></a>
+    <a href="https://pypi.org/project/bioseqflow/"><img src="https://img.shields.io/pypi/v/bioseqflow.svg" alt="PyPI version"></a>
+    <a href="https://codecov.io/gh/omicspilot/BioSeqFlow"><img src="https://codecov.io/gh/omicspilot/BioSeqFlow/graph/badge.svg" alt="Codecov"></a>
+    <br/>
+    <a href="https://github.com/omicspilot/BioSeqFlow/actions/workflows/ci.yml"><img src="https://github.com/omicspilot/BioSeqFlow/actions/workflows/ci.yml/badge.svg" alt="CI workflow"></a>
+    <a href="https://github.com/omicspilot/BioSeqFlow/commits/main"><img src="https://img.shields.io/github/last-commit/omicspilot/BioSeqFlow/main" alt="GitHub last commit"></a>
+  </p>
+</div>
 
-> A comprehensive, type-safe sequencing quality control and preprocessing platform for NGS data analysis
-
-[![CI](https://github.com/omicpilot/bioseqflow/workflows/CI/badge.svg)](https://github.com/omicpilot/bioseqflow/actions)
-[![Python Version](https://img.shields.io/badge/python-3.9%2B-blue)](https://www.python.org/downloads/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
-[![Test Coverage](https://img.shields.io/badge/coverage-74%25-brightgreen)](https://github.com/omicpilot/bioseqflow)
+---
 
 ## Overview
 
@@ -59,11 +67,7 @@ stats = trimmer.trim(
 
 📖 **Full Documentation**: [omicspilot.com/projects/bioseqflow](https://omicspilot.com/projects/bioseqflow)
 
-📝 **Usage Examples**: See [examples/README.md](examples/README.md) for:
-- Paired-end sequencing workflows
-- Fuzzy adapter trimming demonstrations
-- Parallel processing strategies
-- QC results parsing and analysis
+📝 **Usage Examples**: See the CLI `--help` for each command, or use the provided [config_example.yaml](config_example.yaml) and [sample_sheet_example.csv](sample_sheet_example.csv) as starting templates.
 
 🎓 **API Reference**: [docs/usage.md](docs/usage.md)
 
@@ -79,7 +83,6 @@ bioseqflow/
 │   ├── visualization/    # Plots and reports
 │   └── cli/             # Command-line interface
 ├── tests/               # 176 comprehensive tests (74% coverage)
-├── examples/           # Working examples with documentation
 └── docs/              # API documentation and guides
 ```
 
