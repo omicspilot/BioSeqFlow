@@ -1,0 +1,69 @@
+repos:
+  # --- Universal ---
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-toml
+      - id: check-added-large-files
+        exclude: '(^|/)(uv\.lock|pnpm-lock\.yaml)$'
+      - id: check-merge-conflict
+      - id: debug-statements
+      - id: no-commit-to-branch
+        args: [--branch, main]
+
+  # --- Python (packages/server) ---
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.7
+    hooks:
+      - id: ruff
+        files: ^packages/server/
+        args: [--fix, --exit-non-zero-on-fix]
+      - id: ruff-format
+        files: ^packages/server/
+
+  - repo: https://github.com/psf/black
+    rev: 24.10.0
+    hooks:
+      - id: black
+        files: ^packages/server/
+
+  - repo: local
+    hooks:
+      - id: mypy
+        name: mypy
+        language: system
+        entry: bash -c 'cd packages/server && .venv/bin/mypy bioseqflow_server'
+        files: ^packages/server/.*\.py$
+        pass_filenames: false
+
+  # --- Node / TypeScript (packages/desktop) ---
+  - repo: local
+    hooks:
+      - id: eslint
+        name: eslint
+        language: system
+        entry: pnpm --filter @bioseqflow/desktop lint
+        files: ^packages/desktop/src/.*\.(ts|tsx)$
+        pass_filenames: false
+
+      - id: prettier
+        name: prettier
+        language: system
+        entry: pnpm --filter @bioseqflow/desktop format:check
+        files: ^packages/desktop/src/.*\.(ts|tsx|css|json)$
+        pass_filenames: false
+
+  # --- Commit message ---
+  - repo: local
+    hooks:
+      - id: commitlint
+        name: commitlint
+        language: node
+        additional_dependencies:
+          - "@commitlint/cli@latest"
+          - "@commitlint/config-conventional@latest"
+        entry: commitlint --edit
+        stages: [commit-msg]
