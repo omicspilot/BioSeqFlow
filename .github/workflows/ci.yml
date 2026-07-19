@@ -45,7 +45,7 @@ jobs:
       run: ruff format --check bioseqflow tests
 
     - name: Run mypy (type checking)
-      run: mypy bioseqflow
+      run: mypy bioseqflow bioseqflow_server
 
   test:
     name: Test Suite
@@ -115,7 +115,7 @@ jobs:
       run: safety check --json || true
 
     - name: Run bandit security check
-      run: bandit -r bioseqflow -f json || true
+      run: bandit -r bioseqflow bioseqflow_server -f json || true
 
   build:
     name: Build Distribution

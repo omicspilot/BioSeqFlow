@@ -14,16 +14,16 @@ Each step is tackled linearly. Check off items as they are completed.
 > Mirror the CellMetPro monorepo structure exactly for consistency across OmicsPilot.
 
 - [x] **0.1** — Monorepo structure with `pnpm` workspaces (`packages/server`, `packages/desktop`)
-- [~] **0.2** — Python environment: `uv`, `pyproject.toml`, `ruff` / `mypy`
+- [x] **0.2** — Python environment: `uv`, `pyproject.toml`, `ruff` / `mypy`
   - `pyproject.toml`, ruff, mypy config, `uv`-based `Makefile` (`dev`/`check`/`test`/`clean`) in place
-  - Open: `[tool.mypy] python_version = "3.10"` can't parse current numpy's stubs (PEP 695 syntax) — fails `make check` / CI lint job
-- [ ] **0.3** — Node/TS environment: `pnpm`, `tsconfig`, `eslint` / `prettier`
-  - `packages/desktop/package.json` + `tsconfig.json` are bare skeletons only — no deps installed, no eslint/prettier
-- [~] **0.4** — Git hygiene: `.gitignore`, `commitlint`, conventional commits
-  - `.gitignore` covers Node/pnpm/Electron now; commitlint / conventional-commit enforcement not set up
-- [~] **0.5** — Pre-commit hooks (Python + JS in one repo)
-  - Python hooks (ruff, black, mypy) working via `.pre-commit-config.yaml`; no JS/TS hooks yet
-- [ ] **0.6** — Shared OmicsPilot design tokens: import colour palette, typography, component styles from CellMetPro
+  - Fixed: dropped the hardcoded `[tool.mypy] python_version = "3.10"` (was forcing mypy to reject numpy's PEP 695 stub syntax); mypy now auto-targets whichever interpreter runs it, matching each CI matrix leg
+- [x] **0.3** — Node/TS environment: `pnpm`, `tsconfig`, `eslint` / `prettier`
+  - `packages/desktop`: `package.json` (scripts + deps installed via `pnpm install`), split `tsconfig.json`/`tsconfig.node.json` (browser vs. Node/Electron context via TS project references), flat-config `eslint.config.js` (typescript-eslint strict + react-hooks + jsx-a11y + eslint-config-prettier), `.prettierrc` — mirrors `cellmetpro-ui/packages/desktop` exactly
+- [x] **0.4** — Git hygiene: `.gitignore`, `commitlint`, conventional commits
+  - Root `commitlint.config.cjs` (`@commitlint/config-conventional` + a `scope-enum`: server/desktop/electron/tooling/ci/docker/deps), enforced via a `commit-msg` pre-commit hook
+- [x] **0.5** — Pre-commit hooks (Python + JS in one repo)
+  - Rebuilt `.pre-commit-config.yaml` to mirror `cellmetpro-ui`: universal hooks (+`check-toml`, +`no-commit-to-branch main`), ruff/black/mypy scoped to `packages/server/` (mypy now runs as a local hook against the real `.venv`, not an isolated mirror env — it actually sees installed deps like numpy), local eslint/prettier hooks scoped to `packages/desktop/src/`, local `commitlint` hook on the `commit-msg` stage
+  - Verified end-to-end: `pre-commit run --all-files` passes; commit-msg hook confirmed to both reject a non-conventional message and accept a valid one
 
 ---
 
@@ -76,6 +76,7 @@ Each step is tackled linearly. Check off items as they are completed.
 ### 2.0 — Scaffold & Shared Setup
 - [ ] **2.1** — Vite + React + TypeScript scaffold
 - [ ] **2.2** — Tailwind CSS + shadcn/ui setup, OmicsPilot design tokens applied
+  - Tokens live in `omicspilot/web`, not CellMetPro (see 0.6 note) — pull `src/styles/theme/` + `tailwind.config.ts` + `globals.css` + `components.json` (`new-york` style) from there
 - [ ] **2.3** — React Router v6: root layout, route definitions
 - [ ] **2.4** — Zustand stores: connection state, active project state, active run state, tool availability state
 - [ ] **2.5** — Auto-generated API client from OpenAPI spec (`openapi-ts`)

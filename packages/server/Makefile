@@ -4,10 +4,11 @@
 dev:
 	uv sync --extra dev
 	pre-commit install
+	pre-commit install --hook-type commit-msg
 
 # Run the full quality pass (mirrors the pre-commit hooks + CI lint job)
 check:
-	uv run mypy bioseqflow
+	uv run mypy bioseqflow bioseqflow_server
 	uv run ruff check --fix bioseqflow tests
 	uv run ruff format bioseqflow tests
 	uv run black bioseqflow tests
