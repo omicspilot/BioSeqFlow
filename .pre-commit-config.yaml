@@ -6,6 +6,7 @@ repos:
       - id: end-of-file-fixer
       - id: check-yaml
       - id: check-added-large-files
+        exclude: '(^|/)(uv\.lock|pnpm-lock\.yaml)$'
       - id: check-merge-conflict
       - id: debug-statements
 
@@ -29,4 +30,4 @@ repos:
           - types-PyYAML
           - pydantic
         args: [--ignore-missing-imports]
-        exclude: ^tests/
+        exclude: ^packages/server/tests/

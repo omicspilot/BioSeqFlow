@@ -208,3 +208,16 @@ __marimo__/
 
 
 .claude
+
+# Node / pnpm
+node_modules/
+.pnpm-store/
+pnpm-debug.log*
+
+# Vite
+dist-ssr/
+*.local
+
+# Electron build output
+packages/desktop/release/
+packages/desktop/out/

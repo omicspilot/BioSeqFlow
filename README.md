@@ -35,7 +35,7 @@ BioSeqFlow is a modular, production-ready platform for automated sequencing qual
 ```bash
 # From source (recommended for development)
 git clone https://github.com/omicpilot/bioseqflow.git
-cd bioseqflow
+cd bioseqflow/packages/server
 pip install -e ".[dev]"
 
 # From PyPI (coming soon)
@@ -71,17 +71,32 @@ stats = trimmer.trim(
 
 ## Project Structure
 
+This repo is a monorepo: the QC/preprocessing package below is being grown into
+**BioSeqFlow Desktop**, a GUI companion app that wraps the full NGS toolchain
+(FastQC, fastp, STAR, BWA-MEM2, samtools, GATK, featureCounts, pyDESeq2, SnpEff)
+behind a FastAPI server and an Electron + React UI. See
+[context/CONTEXT.md](context/CONTEXT.md) and [context/ROADMAP.md](context/ROADMAP.md)
+for the full architecture and implementation plan.
+
 ```
 bioseqflow/
-├── bioseqflow/              # Main package
-│   ├── core/               # Base classes and configuration
-│   ├── qc/                # QC modules (FastQC, MultiQC, parsers)
-│   ├── preprocessing/     # Trimming, filtering, deduplication
-│   ├── utils/            # Paired-end, parallel, alignment utilities
-│   ├── visualization/    # Plots and reports
-│   └── cli/             # Command-line interface
-├── tests/               # 176 comprehensive tests (74% coverage)
-└── docs/              # API documentation and guides
+├── packages/
+│   ├── server/                        # pip-installable Python package
+│   │   ├── bioseqflow/                # QC/preprocessing toolkit (this README's features)
+│   │   │   ├── core/                 # Base classes and configuration
+│   │   │   ├── qc/                   # QC modules (FastQC, MultiQC, parsers)
+│   │   │   ├── preprocessing/        # Trimming, filtering, deduplication
+│   │   │   ├── utils/                # Paired-end, parallel, alignment utilities
+│   │   │   ├── visualization/        # Plots and reports
+│   │   │   └── cli/                  # Command-line interface
+│   │   ├── bioseqflow_server/         # FastAPI app scaffold (subprocess orchestration, WIP)
+│   │   ├── tests/                     # 176 comprehensive tests (74% coverage)
+│   │   ├── pyproject.toml
+│   │   └── pytest.ini
+│   └── desktop/                       # Electron + React GUI scaffold (WIP)
+│       ├── src/
+│       └── electron/
+└── docs/                              # API documentation and guides
 ```
 
 ## Core Capabilities

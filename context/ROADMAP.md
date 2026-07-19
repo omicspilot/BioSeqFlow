@@ -13,11 +13,16 @@ Each step is tackled linearly. Check off items as they are completed.
 
 > Mirror the CellMetPro monorepo structure exactly for consistency across OmicsPilot.
 
-- [ ] **0.1** — Monorepo structure with `pnpm` workspaces (`packages/server`, `packages/desktop`)
-- [ ] **0.2** — Python environment: `uv`, `pyproject.toml`, `ruff` / `mypy`
+- [x] **0.1** — Monorepo structure with `pnpm` workspaces (`packages/server`, `packages/desktop`)
+- [~] **0.2** — Python environment: `uv`, `pyproject.toml`, `ruff` / `mypy`
+  - `pyproject.toml`, ruff, mypy config, `uv`-based `Makefile` (`dev`/`check`/`test`/`clean`) in place
+  - Open: `[tool.mypy] python_version = "3.10"` can't parse current numpy's stubs (PEP 695 syntax) — fails `make check` / CI lint job
 - [ ] **0.3** — Node/TS environment: `pnpm`, `tsconfig`, `eslint` / `prettier`
-- [ ] **0.4** — Git hygiene: `.gitignore`, `commitlint`, conventional commits
-- [ ] **0.5** — Pre-commit hooks (Python + JS in one repo)
+  - `packages/desktop/package.json` + `tsconfig.json` are bare skeletons only — no deps installed, no eslint/prettier
+- [~] **0.4** — Git hygiene: `.gitignore`, `commitlint`, conventional commits
+  - `.gitignore` covers Node/pnpm/Electron now; commitlint / conventional-commit enforcement not set up
+- [~] **0.5** — Pre-commit hooks (Python + JS in one repo)
+  - Python hooks (ruff, black, mypy) working via `.pre-commit-config.yaml`; no JS/TS hooks yet
 - [ ] **0.6** — Shared OmicsPilot design tokens: import colour palette, typography, component styles from CellMetPro
 
 ---
