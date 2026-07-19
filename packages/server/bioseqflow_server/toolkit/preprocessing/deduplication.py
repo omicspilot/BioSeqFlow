@@ -7,9 +7,9 @@ from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any
 
-from bioseqflow.core.base import PreprocessingModule
-from bioseqflow.utils.io import FastqRecord, read_fastq, write_fastq
-from bioseqflow.utils.validators import validate_file_path
+from bioseqflow_server.toolkit.core.base import PreprocessingModule
+from bioseqflow_server.toolkit.utils.io import FastqRecord, read_fastq, write_fastq
+from bioseqflow_server.toolkit.utils.validators import validate_file_path
 
 
 def hamming_distance(seq1: str, seq2: str) -> int:

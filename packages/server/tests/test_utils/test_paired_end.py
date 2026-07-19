@@ -7,8 +7,8 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from bioseqflow.utils.io import FastqRecord, write_fastq
-from bioseqflow.utils.paired_end import (
+from bioseqflow_server.toolkit.utils.io import FastqRecord, write_fastq
+from bioseqflow_server.toolkit.utils.paired_end import (
     calculate_insert_size_distribution,
     check_read_orientation,
     extract_read_id,

@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from bioseqflow.preprocessing.filtering import LengthFilter, QualityFilter
+from bioseqflow_server.toolkit.preprocessing.filtering import LengthFilter, QualityFilter
 
 
 class TestQualityFilter:

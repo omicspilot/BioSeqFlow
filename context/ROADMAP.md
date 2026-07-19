@@ -5,7 +5,7 @@ Each step is tackled linearly. Check off items as they are completed.
 
 > **Mission**: Make NGS analysis accessible to any researcher, regardless of command-line experience. BioSeqFlow wraps the full NGS toolchain (FastQC, fastp, STAR, BWA-MEM2, samtools, GATK, featureCounts, pyDESeq2, SnpEff) behind a clean desktop GUI — the same architecture as CellMetPro.
 >
-> **Prerequisite**: `bioseqflow-core` (Project A) must be complete. You need to understand what every tool does, what it outputs, and what can go wrong before wrapping it in a GUI.
+> **One repo, one product**: no separate Nextflow pipeline or standalone Python package to build and keep in sync first — this repo directly orchestrates each NGS tool as a managed subprocess.
 
 ---
 

@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from bioseqflow.utils.validators import (
+from bioseqflow_server.toolkit.utils.validators import (
     validate_adapter_sequence,
     validate_file_path,
     validate_output_directory,

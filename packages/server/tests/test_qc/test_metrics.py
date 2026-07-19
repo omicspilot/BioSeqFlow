@@ -2,8 +2,8 @@
 
 import pytest
 
-from bioseqflow.qc.metrics import QualityMetrics
-from bioseqflow.utils.io import FastqRecord
+from bioseqflow_server.toolkit.qc.metrics import QualityMetrics
+from bioseqflow_server.toolkit.utils.io import FastqRecord
 
 
 class TestQualityMetrics:

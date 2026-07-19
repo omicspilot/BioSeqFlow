@@ -5,7 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import TYPE_CHECKING, NamedTuple
 
-from bioseqflow.utils.io import FastqRecord, read_fastq
+from bioseqflow_server.toolkit.utils.io import FastqRecord, read_fastq
 
 if TYPE_CHECKING:
     from collections.abc import Generator

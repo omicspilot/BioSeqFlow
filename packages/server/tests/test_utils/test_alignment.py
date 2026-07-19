@@ -3,7 +3,7 @@ from __future__ import annotations
 """Tests for sequence alignment utilities."""
 
 
-from bioseqflow.utils.alignment import (
+from bioseqflow_server.toolkit.utils.alignment import (
     calculate_match_score,
     find_adapter_fuzzy,
     smith_waterman,

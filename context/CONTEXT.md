@@ -2,13 +2,14 @@
 
 ## What this is
 
-A companion application to **bioseqflow-core** (https://github.com/omicspilot/bioseqflow-core),
-a Nextflow pipeline for NGS analysis covering RNA-seq differential expression and DNA variant
-calling. bioseqflow-core orchestrates industry-standard tools (FastQC, fastp, STAR, BWA-MEM2,
-samtools, GATK, featureCounts, pyDESeq2, SnpEff) into reproducible, production-grade pipelines.
+A single, self-contained desktop application that wraps the industry-standard NGS toolchain
+(FastQC, fastp, STAR, BWA-MEM2, samtools, GATK, featureCounts, pyDESeq2, SnpEff) for RNA-seq
+differential expression and DNA variant calling behind a clean GUI. One repo, one product: there
+is no separate Nextflow pipeline or standalone Python library to build and keep in sync first —
+the app directly orchestrates each tool as a managed subprocess.
 
 This project makes those capabilities accessible to scientists who are not comfortable with the
-command line, Nextflow, or managing bioinformatics tool installations. The goal is a
+command line or managing bioinformatics tool installations. The goal is a
 **production-quality, open-source, cross-platform desktop application** — not a demo or internal
 tool. Every architectural and code decision should reflect that standard.
 
@@ -16,16 +17,18 @@ tool. Every architectural and code decision should reflect that standard.
 
 ## The developer
 
-**Oumar Ndiaye** — bioinformatics engineer and author of CellMetPro and bioseqflow-core.
+**Oumar Ndiaye** — bioinformatics engineer, author of CellMetPro.
 
 - Comfortable with Python: built CellMetPro end-to-end (COMPASS algorithm, FBA, scRNA-seq pipeline,
-  CLI, test suite, CI/CD, PyPI), built bioseqflow-core (Nextflow, NGS toolchain, RNA-seq + variant
-  calling tracks)
+  CLI, test suite, CI/CD, PyPI)
 - Strong JavaScript/TypeScript: React, Vue, Node.js; has shipped production JS projects
 - Already built CellMetPro UI with the same architecture — this is the second OmicsPilot desktop
   application, applying established patterns to a new domain
 - Not a fan of Java; avoid unless there is a genuinely compelling reason
 - This project deepens expertise in:
+  - The NGS toolchain itself (FastQC, fastp, STAR, BWA-MEM2, samtools, GATK, featureCounts,
+    pyDESeq2, SnpEff) — learned hands-on while building each subprocess wrapper, not as a
+    separate prerequisite project
   - Managing long-running external processes from a web server (hours-scale, not seconds)
   - WebSocket progress streaming from tool-specific log formats
   - Reference genome management (large file downloads, indexing, persistence)
@@ -284,15 +287,13 @@ this schema. The frontend is tool-agnostic — it only consumes normalised event
 
 ---
 
-## Relationship to bioseqflow-core and OmicsPilot
+## Relationship to OmicsPilot
 
-- `bioseqflow-server` calls NGS tools as subprocesses — it does not reimplement any analysis logic
-- `bioseqflow-core` (the Nextflow pipeline) is the reference implementation; the server mirrors its
-  tool choices and parameter defaults
+- `bioseqflow-server` calls NGS tools as subprocesses — it does not reimplement the analysis logic
+  of industry-standard tools (FastQC, STAR, GATK, etc. remain the source of truth for their own
+  algorithms)
 - The desktop app is version-agnostic as long as the server API contract is maintained
 - Breaking API changes follow semver (major bump)
-- bioseqflow-core remains a fully independent Nextflow pipeline — this project adds a UI layer,
-  it does not replace or fork it
 - BioSeqFlow and CellMetPro share the same OmicsPilot brand, design tokens, and monorepo
   conventions — they are sibling products, not competing tools
 

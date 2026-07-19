@@ -5,9 +5,9 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from bioseqflow.core.base import PreprocessingModule
-from bioseqflow.utils.io import FastqRecord, read_fastq, write_fastq
-from bioseqflow.utils.validators import validate_file_path, validate_quality_score
+from bioseqflow_server.toolkit.core.base import PreprocessingModule
+from bioseqflow_server.toolkit.utils.io import FastqRecord, read_fastq, write_fastq
+from bioseqflow_server.toolkit.utils.validators import validate_file_path, validate_quality_score
 
 
 class QualityFilter(PreprocessingModule):

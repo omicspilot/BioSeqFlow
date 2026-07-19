@@ -35,7 +35,7 @@ repos:
       - id: mypy
         name: mypy
         language: system
-        entry: bash -c 'cd packages/server && .venv/bin/mypy bioseqflow bioseqflow_server'
+        entry: bash -c 'cd packages/server && .venv/bin/mypy bioseqflow_server'
         files: ^packages/server/.*\.py$
         pass_filenames: false
 

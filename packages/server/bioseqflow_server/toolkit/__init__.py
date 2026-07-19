@@ -10,14 +10,14 @@ of sequencing data from various platforms (NGS, long-read, etc.).
 from importlib.metadata import PackageNotFoundError, version
 
 try:
-    __version__ = version("bioseqflow")
+    __version__ = version("bioseqflow-server")
 except PackageNotFoundError:
     __version__ = "unknown"
 
 __author__ = "OmicsPilot"
 
-from bioseqflow.core.base import PreprocessingModule, QCModule
-from bioseqflow.core.config import Config
+from bioseqflow_server.toolkit.core.base import PreprocessingModule, QCModule
+from bioseqflow_server.toolkit.core.config import Config
 
 __all__ = [
     "Config",

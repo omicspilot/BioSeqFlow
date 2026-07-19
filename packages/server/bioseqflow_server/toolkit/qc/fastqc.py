@@ -6,9 +6,9 @@ import subprocess
 from pathlib import Path
 from typing import Any
 
-from bioseqflow.core.base import QCModule
-from bioseqflow.qc.parsers import FastQCParser
-from bioseqflow.utils.validators import validate_file_path, validate_threads
+from bioseqflow_server.toolkit.core.base import QCModule
+from bioseqflow_server.toolkit.qc.parsers import FastQCParser
+from bioseqflow_server.toolkit.utils.validators import validate_file_path, validate_threads
 
 
 class FastQCRunner(QCModule):

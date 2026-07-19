@@ -6,8 +6,8 @@ import pytest
 import yaml
 from pydantic import ValidationError
 
-from bioseqflow.core.base import PreprocessingModule, QCModule
-from bioseqflow.core.config import Config
+from bioseqflow_server.toolkit.core.base import PreprocessingModule, QCModule
+from bioseqflow_server.toolkit.core.config import Config
 
 
 class TestConfig:

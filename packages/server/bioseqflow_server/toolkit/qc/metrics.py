@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from bioseqflow.utils.io import FastqRecord
+    from bioseqflow_server.toolkit.utils.io import FastqRecord
 
 from collections import defaultdict
 from typing import Any

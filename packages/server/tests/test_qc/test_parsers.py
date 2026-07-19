@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from bioseqflow.qc.parsers import FastQCParser, MultiQCParser
+from bioseqflow_server.toolkit.qc.parsers import FastQCParser, MultiQCParser
 
 if TYPE_CHECKING:
     from pathlib import Path

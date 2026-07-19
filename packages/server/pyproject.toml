@@ -3,9 +3,9 @@ requires = ["setuptools>=65.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "bioseqflow"
+name = "bioseqflow-server"
 version = "0.1.0"
-description = "A comprehensive sequencing quality control and preprocessing platform"
+description = "FastAPI server that orchestrates the NGS toolchain as managed subprocesses for BioSeqFlow Desktop"
 readme = "README.md"
 authors = [
     {name = "OmicsPilot", email = "info@omicspilot.com"}
@@ -57,18 +57,15 @@ docs = [
     "mkdocstrings[python]>=0.23.0",
 ]
 
-[project.scripts]
-bioseqflow = "bioseqflow.cli.main:cli"
-
 [project.urls]
-Homepage = "https://github.com/omicpilot/bioseqflow"
-Documentation = "https://github.com/omicpilot/bioseqflow#readme"
-Repository = "https://github.com/omicpilot/bioseqflow"
-Issues = "https://github.com/omicpilot/bioseqflow/issues"
+Homepage = "https://github.com/omicspilot/BioSeqFlow"
+Documentation = "https://github.com/omicspilot/BioSeqFlow#readme"
+Repository = "https://github.com/omicspilot/BioSeqFlow"
+Issues = "https://github.com/omicspilot/BioSeqFlow/issues"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["bioseqflow*"]
+include = ["bioseqflow_server*"]
 exclude = ["tests*"]
 
 [tool.pytest.ini_options]
@@ -79,7 +76,7 @@ python_functions = ["test_*"]
 addopts = [
     "--strict-markers",
     "--strict-config",
-    "--cov=bioseqflow",
+    "--cov=bioseqflow_server",
     "--cov-report=term-missing",
     "--cov-report=html",
     "--cov-report=xml",
@@ -91,7 +88,7 @@ markers = [
 ]
 
 [tool.coverage.run]
-source = ["bioseqflow"]
+source = ["bioseqflow_server"]
 omit = [
     "*/tests/*",
     "*/test_*.py",
@@ -156,7 +153,7 @@ ignore = [
 "tests/**/*.py" = ["ARG", "S101"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["bioseqflow"]
+known-first-party = ["bioseqflow_server"]
 
 [tool.black]
 line-length = 100

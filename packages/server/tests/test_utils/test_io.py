@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from bioseqflow.utils.io import (
+from bioseqflow_server.toolkit.utils.io import (
     FastqRecord,
     count_reads,
     get_read_length_distribution,

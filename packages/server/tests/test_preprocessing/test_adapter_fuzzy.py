@@ -7,8 +7,8 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from bioseqflow.preprocessing.trimming import AdapterTrimmer
-from bioseqflow.utils.io import FastqRecord, write_fastq
+from bioseqflow_server.toolkit.preprocessing.trimming import AdapterTrimmer
+from bioseqflow_server.toolkit.utils.io import FastqRecord, write_fastq
 
 if TYPE_CHECKING:
     from pathlib import Path

@@ -6,10 +6,10 @@ import subprocess
 from pathlib import Path
 from typing import Any
 
-from bioseqflow.core.base import PreprocessingModule
-from bioseqflow.utils.alignment import find_adapter_fuzzy
-from bioseqflow.utils.io import FastqRecord, read_fastq, write_fastq
-from bioseqflow.utils.validators import (
+from bioseqflow_server.toolkit.core.base import PreprocessingModule
+from bioseqflow_server.toolkit.utils.alignment import find_adapter_fuzzy
+from bioseqflow_server.toolkit.utils.io import FastqRecord, read_fastq, write_fastq
+from bioseqflow_server.toolkit.utils.validators import (
     validate_adapter_sequence,
     validate_file_path,
     validate_quality_score,

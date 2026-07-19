@@ -6,21 +6,21 @@ from pathlib import Path
 
 import click
 
-from bioseqflow import __version__
-from bioseqflow.core.config import Config
-from bioseqflow.preprocessing.deduplication import DuplicateRemover
-from bioseqflow.preprocessing.filtering import QualityFilter
-from bioseqflow.preprocessing.trimming import AdapterTrimmer, QualityTrimmer
-from bioseqflow.qc.fastqc import FastQCRunner
-from bioseqflow.qc.metrics import QualityMetrics
-from bioseqflow.qc.parsers import FastQCParser, MultiQCParser
-from bioseqflow.utils.io import parse_sample_sheet
-from bioseqflow.utils.paired_end import (
+from bioseqflow_server.toolkit import __version__
+from bioseqflow_server.toolkit.core.config import Config
+from bioseqflow_server.toolkit.preprocessing.deduplication import DuplicateRemover
+from bioseqflow_server.toolkit.preprocessing.filtering import QualityFilter
+from bioseqflow_server.toolkit.preprocessing.trimming import AdapterTrimmer, QualityTrimmer
+from bioseqflow_server.toolkit.qc.fastqc import FastQCRunner
+from bioseqflow_server.toolkit.qc.metrics import QualityMetrics
+from bioseqflow_server.toolkit.qc.parsers import FastQCParser, MultiQCParser
+from bioseqflow_server.toolkit.utils.io import parse_sample_sheet
+from bioseqflow_server.toolkit.utils.paired_end import (
     calculate_insert_size_distribution,
     check_read_orientation,
     validate_paired_files,
 )
-from bioseqflow.utils.parallel import process_samples_parallel
+from bioseqflow_server.toolkit.utils.parallel import process_samples_parallel
 
 
 def echo_header(text: str) -> None:

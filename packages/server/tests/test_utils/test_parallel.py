@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import multiprocessing as mp
 
-from bioseqflow.utils.parallel import (
+from bioseqflow_server.toolkit.utils.parallel import (
     get_optimal_workers,
     parallel_map,
     process_samples_parallel,

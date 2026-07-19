@@ -8,12 +8,12 @@ from typing import TYPE_CHECKING
 import pytest
 from pydantic import ValidationError
 
-from bioseqflow.core.config import Config
-from bioseqflow.preprocessing.deduplication import DuplicateRemover, UMIDeduplicator
-from bioseqflow.preprocessing.filtering import LengthFilter, QualityFilter
-from bioseqflow.preprocessing.trimming import AdapterTrimmer, QualityTrimmer
-from bioseqflow.utils.alignment import find_adapter_fuzzy, smith_waterman
-from bioseqflow.utils.io import FastqRecord, read_fastq, write_fastq
+from bioseqflow_server.toolkit.core.config import Config
+from bioseqflow_server.toolkit.preprocessing.deduplication import DuplicateRemover, UMIDeduplicator
+from bioseqflow_server.toolkit.preprocessing.filtering import LengthFilter, QualityFilter
+from bioseqflow_server.toolkit.preprocessing.trimming import AdapterTrimmer, QualityTrimmer
+from bioseqflow_server.toolkit.utils.alignment import find_adapter_fuzzy, smith_waterman
+from bioseqflow_server.toolkit.utils.io import FastqRecord, read_fastq, write_fastq
 
 if TYPE_CHECKING:
     from pathlib import Path
